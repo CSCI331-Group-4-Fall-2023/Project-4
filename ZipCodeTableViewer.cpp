@@ -54,8 +54,11 @@
 #include <set>
 #include <iomanip>
 #include "ZipCodeBuffer.h"
+#include "ZipCodeBuffer.cpp"
 #include "ZipCodeRecordSearch.h"
-#include "ZipCodeIndexer.h"
+#include "ZipCodeRecordSearch.cpp"
+// #include "ZipCodeIndexer.h"
+#include "ZipCodeIndexer.cpp"
 #include "HeaderBuffer.h"
 
 
