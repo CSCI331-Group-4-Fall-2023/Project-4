@@ -71,14 +71,14 @@ int main(int argc, char* argv[]) {
     while (getline(readFile, currentLine)) {
 
         try {
-            currentLineLength = stoi(currentLine.substr(0, 2));
+            currentLineLength = stoi(currentLine.substr(0, 2)) + 3;
         } catch (const invalid_argument& ia) {
             cerr << "Invalid argument: " << ia.what() << "\n";
             return 1; // could be changed to continue if things need to work out
         }
 
         // If adding the current line exceeds the block capacity, end the current block
-        if (currentBlockSize + currentLineLength > BLOCK_CAPACITY) {
+        if (currentBlockSize + currentLineLength> BLOCK_CAPACITY) {
             // First we have to fill the rest of the current block with filler characters
             for (int i = 0; i < BLOCK_SIZE - currentBlockSize; i++) {
                 writeFile << "~";
