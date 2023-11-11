@@ -32,5 +32,3 @@ int convertCSV() {
 
     std::cout << "Prepended length field to " << recordNumber - 1 << " records." << std::endl;
 }
-
-// Testing GitHub

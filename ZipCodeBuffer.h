@@ -42,6 +42,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
+//#include "BlockBuffer.h"
 
 /// @brief Structure to hold a ZIP Code record.
 struct ZipCodeRecord {
@@ -60,6 +61,8 @@ private:
     std::string fileName;
     std::ifstream file;
     char fileType;
+    //vector<ZipCodeRecord> blockRecords; // Stores the current block of records if using a block file format
+    //int blockRecordsIndex = -1; // Default to index below 0 so it retrieves the first block on first check
 
 public:
     /**

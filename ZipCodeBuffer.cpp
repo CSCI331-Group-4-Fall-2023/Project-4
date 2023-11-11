@@ -8,6 +8,7 @@
 #include <vector> 
 #include <sstream> 
 #include "ZipCodeBuffer.h"
+//#include "BlockBuffer.h"
 
 /// @brief Constructor that accepts the CSV filename.
 ZipCodeBuffer::ZipCodeBuffer(std::string fileName, char fileType = 'L') : fileName(fileName), fileType(std::toupper(fileType)) {
@@ -40,6 +41,22 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
     ZipCodeRecord record;
     std::string line;
 
+    /*
+    if (fileType == 'B')
+    {
+        BlockBuffer blockBuffer; // TODO can it construct an empty buffer like this?
+        // TODO if it can, then it should be stored in the class rather than in this scope
+
+        if (blockRecordsIndex > blockRecords.size())
+        {
+            // Reached the end of the block, so retrieve the next one
+            
+            // TODO needs block buffer to retrieve the next block and store the vector in blockRecords
+        }
+        
+    }
+    */
+    
     if (fileType == 'C')
     {
         getline(file, line);
