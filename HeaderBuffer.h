@@ -50,6 +50,7 @@
 
 class HeaderBuffer {
 public:
+
     struct Field {
         std::string zipCode;
         std::string placeName;
@@ -78,10 +79,17 @@ public:
     void setHeaderSizeBytes(int headerSizeBytes);
     void setRecordSizeBytes(int recordSizeBytes);
     void setSizeFormatType(const std::string& sizeFormatType);
+    void setBlockSize(int blockSize);
+    void setminimumBlockCapacity(int minimumBlockCapacity);
     void setPrimaryKeyIndexFileName(const std::string& primaryKeyIndexFileName);
+    void setprimaryKeyIndexFileSchema(const std::string& primaryKeyIndexFileSchema);
     void setRecordCount(int recordCount);
+    void setBlockCount(int blockCount);
     void setFieldCount(int fieldCount);
     void setPrimaryKeyFieldIndex(int primaryKeyFieldIndex);
+    void setRBNA(int RBNA);
+    void setRBNS(int RBNS);
+    void setstaleFlag(bool staleFlag);
     void addField(const Field& field);
 
     std::string getFileStructureType() const;
@@ -89,10 +97,16 @@ public:
     int getHeaderSizeBytes() const;
     int getRecordSizeBytes() const;
     std::string getSizeFormatType() const;
+    int getBlockSize() const;
+    int getMinimumBlockCapacity() const;
     std::string getPrimaryKeyIndexFileName() const;
     int getRecordCount() const;
+    int getBlockCount() const;
     int getFieldCount() const;
     int getPrimaryKeyFieldIndex() const;
+    int getRBNA() const;
+    int getRBNS() const;
+    bool getStaleFlag() const;
     const std::vector<Field>& getFields() const;
 
 private:
@@ -102,11 +116,18 @@ private:
     int headerSizeBytes_;
     int recordSizeBytes_;
     std::string sizeFormatType_;
+    int blockSize_;
+    int minimumBlockCapacity_;
     std::string primaryKeyIndexFileName_;
+    std::string primaryKeyIndexFileSchema_;
     int recordCount_;
+    int blockCount_;
     int fieldCount_;
     int primaryKeyFieldIndex_;
+    int RBNA_;
+    int RBNS_;
+    bool staleFlag_;
     std::vector<Field> fields_;
 };
-
+#include "HeaderBuffer.cpp"
 #endif // HEADERBUFFER_H

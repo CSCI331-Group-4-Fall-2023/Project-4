@@ -1,33 +1,21 @@
 /// @file HeaderBuffer.cpp
 /// @class HeaderBuffer
 /// @brief Implementation of the HeaderBuffer class for for handling header data.
-
+#include "HeaderBuffer.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
 
-/// @class HeaderBuffer
-/// @brief Represents a class for handling header data.
-class HeaderBuffer {
-public:
-    struct Field {
-        std::string zipCode;
-        std::string placeName;
-        std::string state;
-        std::string county;
-        std::string latitude;
-        std::string longitude;
-    };
 
     /// @brief Constructor to initialize HeaderBuffer with a filename.
     /// @param filename The name of the header file to be opened as a string.
-    HeaderBuffer(const std::string& filename) : filename_(filename) {
+    HeaderBuffer::HeaderBuffer(const std::string& filename) : filename_(filename) {
     }
 
     /// @brief Write the header data to a file.
     /// @pre The file must be successfully opened for writing.
-    void writeHeader() {
+    void HeaderBuffer::writeHeader() {
         std::ofstream file(filename_);
 
         if (!file.is_open()) {
@@ -36,6 +24,16 @@ public:
             return;
         }
 
+        //good version for top line printing
+        /*
+        file<< "File structure type: "<< fileStructureType_ << " - File structure version: " << 
+        fileStructureVersion_ <<" - Header Size (bytes): " << headerSizeBytes_ <<" - Record Size (bytes): " << recordSizeBytes_ <<" - Size Format Type: "
+        << sizeFormatType_ <<" - block size: " << blockSize_ <<" - min block capacity: " << minimumBlockCapacity_ << " - Primary Key Index File: " 
+        << primaryKeyIndexFileName_ << " - Primary Key Index File scheam: " << primaryKeyIndexFileSchema_ <<  " - Record Count: " << recordCount_ 
+        << " - Block Count: " << blockCount_ << " - Field Count: " << fieldCount_ << " - Primary Key: " << primaryKeyFieldIndex_ << " - RBNA link: " 
+        << RBNA_ <<" - RBNS link: " << RBNS_<<" - Stale Flag link: " << staleFlag_ << std::endl;
+        */
+        //version for seeing all the stuff
         file << "Read Header:" << std::endl;
         file << " - File structure type: " << fileStructureType_ << std::endl;
         file << " - File structure version: " << fileStructureVersion_ << std::endl;
@@ -66,7 +64,7 @@ public:
 
     /// @brief Reader header data from a file.
     /// @pre The file must be successfully opened for reading.
-    void readHeader() {
+    void HeaderBuffer::readHeader() {
         std::ifstream file(filename_);
 
         if (!file.is_open()) {
@@ -136,110 +134,153 @@ public:
 
     /// @brief Setters for various header fields.
     /// @param fileStructureType The file structure type as a string.
-    void setFileStructureType(const std::string& fileStructureType) {
+    void HeaderBuffer::setFileStructureType(const std::string& fileStructureType) {
         fileStructureType_ = fileStructureType;
     }
 
     /// @param fileStructureVersion The file structure version as a string.
-    void setFileStructureVersion(const std::string& fileStructureVersion) {
+    void HeaderBuffer::setFileStructureVersion(const std::string& fileStructureVersion) {
         fileStructureVersion_ = fileStructureVersion;
     }
 
     /// @param headerSizeBytes The header size in bytes as an integer.
-    void setHeaderSizeBytes(int headerSizeBytes) {
+    void HeaderBuffer::setHeaderSizeBytes(int headerSizeBytes) {
         headerSizeBytes_ = headerSizeBytes;
     }
 
     /// @param recordSizeBytes The record size in bytes as an integer.
-    void setRecordSizeBytes(int recordSizeBytes) {
+    void HeaderBuffer::setRecordSizeBytes(int recordSizeBytes) {
         recordSizeBytes_ = recordSizeBytes;
     }
 
     /// @param sizeFormatType The size format type as a string (ASCII or binary).
-    void setSizeFormatType(const std::string& sizeFormatType) {
+    void HeaderBuffer::setSizeFormatType(const std::string& sizeFormatType) {
         sizeFormatType_ = sizeFormatType;
     }
 
+    /// @param blockSize The size of the blocks.
+    void HeaderBuffer::setBlockSize(int blockSize) {
+        blockSize_ = blockSize;
+    }
+
+    /// @param minimumBlockCapacity The smallest amount of a block that can be filled.
+    void HeaderBuffer::setminimumBlockCapacity(int minimumBlockCapacity) {
+        minimumBlockCapacity_ = minimumBlockCapacity;
+    }
+
     /// @param primaryKeyIndexFileName The primary key index file name as a string.
-    void setPrimaryKeyIndexFileName(const std::string& primaryKeyIndexFileName) {
+    void HeaderBuffer::setPrimaryKeyIndexFileName(const std::string& primaryKeyIndexFileName) {
         primaryKeyIndexFileName_ = primaryKeyIndexFileName;
     }
 
+    /// @param primaryKeyIndexFileSchema The info on how to read the index file.
+    void HeaderBuffer::setprimaryKeyIndexFileSchema(const std::string& primaryKeyIndexFileSchema) {
+        primaryKeyIndexFileSchema_ = primaryKeyIndexFileSchema;
+    }
+
     /// @param recordCount The record count as an integer.
-    void setRecordCount(int recordCount) {
+    void HeaderBuffer::setRecordCount(int recordCount) {
         recordCount_ = recordCount;
     }
 
+    /// @param blockCount The block count as an integer.
+    void HeaderBuffer::setBlockCount(int blockCount) {
+        blockCount_ = blockCount;
+    }
+
     /// @param fieldCount The field count as an integer.
-    void setFieldCount(int fieldCount) {
+    void HeaderBuffer::setFieldCount(int fieldCount) {
         fieldCount_ = fieldCount;
     }
 
     /// @param primaryKeyFieldIndex The primary key field index as an integer.
-    void setPrimaryKeyFieldIndex(int primaryKeyFieldIndex) {
+    void HeaderBuffer::setPrimaryKeyFieldIndex(int primaryKeyFieldIndex) {
         primaryKeyFieldIndex_ = primaryKeyFieldIndex;
+    }
+
+    /// @param RBNA The RBNA as an integer.
+    void HeaderBuffer::setRBNA(int RBNA) {
+        RBNA_ = RBNA;
+    }
+
+    /// @param RBNS The RBNA as an integer.
+    void HeaderBuffer::setRBNS(int RBNS) {
+        RBNS_ = RBNS;
+    }
+
+    /// @param staleFlag The tells if the header record is stale.
+    void HeaderBuffer::setstaleFlag(bool staleFlag) {
+        staleFlag_ = staleFlag;
     }
 
     /// @brief Add a field to the header.
     /// @param field The Field structure to be added to the header.
-    void addField(const Field& field) {
+    void HeaderBuffer::addField(const Field& field) {
         fields_.push_back(field);
     }
 
     /// @brief Getters for header fields.
-    std::string getFileStructureType() const {
+    std::string HeaderBuffer::getFileStructureType() const {
         return fileStructureType_;
     }
 
-    std::string getFileStructureVersion() const {
+    std::string HeaderBuffer::getFileStructureVersion() const {
         return fileStructureVersion_;
     }
 
-    int getHeaderSizeBytes() const {
+    int HeaderBuffer::getHeaderSizeBytes() const {
         return headerSizeBytes_;
     }
 
-    int getRecordSizeBytes() const {
+    int HeaderBuffer::getRecordSizeBytes() const {
         return recordSizeBytes_;
     }
 
-    std::string getSizeFormatType() const {
+    std::string HeaderBuffer::getSizeFormatType() const {
         return sizeFormatType_;
     }
 
-    std::string getPrimaryKeyIndexFileName() const {
+    int HeaderBuffer::getBlockSize() const {
+        return blockSize_;
+    }
+
+    int HeaderBuffer::getMinimumBlockCapacity() const {
+        return minimumBlockCapacity_;
+    }
+
+    int HeaderBuffer::getBlockCount() const {
+        return blockCount_;
+    }
+    std::string HeaderBuffer::getPrimaryKeyIndexFileName() const {
         return primaryKeyIndexFileName_;
     }
 
-    int getRecordCount() const {
+    int HeaderBuffer::getRecordCount() const {
         return recordCount_;
     }
 
-    int getFieldCount() const {
+    int HeaderBuffer::getFieldCount() const {
         return fieldCount_;
     }
 
-    int getPrimaryKeyFieldIndex() const {
+    int HeaderBuffer::getPrimaryKeyFieldIndex() const {
         return primaryKeyFieldIndex_;
     }
 
-    const std::vector<Field>& getFields() const {
-        return fields_;
+    int HeaderBuffer::getRBNA() const {
+        return RBNA_;
     }
 
-private:
-    std::string filename_;
-    std::string fileStructureType_;
-    std::string fileStructureVersion_;
-    int headerSizeBytes_;
-    int recordSizeBytes_;
-    std::string sizeFormatType_;
-    std::string primaryKeyIndexFileName_;
-    int recordCount_;
-    int fieldCount_;
-    int primaryKeyFieldIndex_;
-    std::vector<Field> fields_;
-};
+    int HeaderBuffer::getRBNS() const {
+        return RBNS_;
+    }
+
+    bool HeaderBuffer::getStaleFlag() const {
+        return staleFlag_;
+    }
+    //const std::vector<Field>& HeaderBuffer::getFields() const {
+     //   return fields_;
+   // }
 
 int headerBuffer() {
     HeaderBuffer headerBuffer("header.txt");

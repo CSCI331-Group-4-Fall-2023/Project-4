@@ -1,0 +1,20 @@
+Read Header:
+ - File structure type: 1.0
+ - File structure version: 1.0
+ - Header Size (bytes): 256
+ - Record Size (bytes): 128
+ - Size Format Type: ASCII
+ - Primary Key Index File: index.txt
+ - Record Count: 1000
+ - Field Count: 5
+ - Primary Key: 1
+
+- Fields:
+   - Zip Code: string
+   - Place Name: string
+   - State: string
+   - County: string
+   - Latitude: double
+   - Longitude: double
+
+Data:
