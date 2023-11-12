@@ -74,7 +74,7 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
         std::istringstream ss(line);
         std::string token;
 
-        // Parse the CSV record fields using istringstream 
+        // Parse the record fields using istringstream 
         std::vector<std::string> tokens;
         while (getline(ss, token, ',')) {
             tokens.push_back(token);
@@ -82,7 +82,7 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
 
         if (tokens.size() == 6)
         {
-            // Fill the ZipCodeRecord struct with the data from the CSV record
+            // Fill the ZipCodeRecord struct with the data from the record
             record.zipCode = tokens[0];
             record.placeName = tokens[1];
             record.state = tokens[2];
