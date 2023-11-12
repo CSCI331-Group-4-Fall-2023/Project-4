@@ -2,17 +2,16 @@
 /**
  * @file ZipCodeBuffer.h
  * @class ZipCodeBuffer
- * @brief Class to parse ZIP code records in a CSV file.
+ * @brief Class to parse ZIP code records in a file.
  * @author Kent Biernath
  * @author Emma Hoffmann, Emily Yang
- * @author Rediet Gelaw, Devon Lattery, Bhumika Basnet
- * @date 2023-10-16
- * @version 2.0
+ * @date 2023-11-11
+ * @version 3.0
  */
 // ----------------------------------------------------------------------------
 /**
  * @details
- * \n The ZipCodeBuffer class reads a record from a CSV with these six fields:
+ * \n The ZipCodeBuffer class reads a record from a file with these six fields:
  * \n  -- ZIP Code (string)
  * \n  -- Place Name (string)
  * \n  -- State Codes (string)
@@ -21,15 +20,16 @@
  * \n  -- Longitude (double)
  * \n
  * \n Whenever readNextRecord is called, it reads the next record from the
- *    CSV file and returns it in a ZipCodeRecord struct.
+ *    file and returns it in a ZipCodeRecord struct after parsing it with
+ *    parseRecord.
  * \n
- * \n The name of the CSV file to be opened is passed to the class constructor
+ * \n The name of the file to be opened is passed to the class constructor
  *    as a string.
  * \n
  * \n  Assumptions:
- * \n  -- The CSV file is in the same directory as the program.
- * \n  -- The CSV file records always contain exactly six fields.
- * \n  -- The CSV file has column headers on the first line.
+ * \n  -- The file is in the same directory as the program.
+ * \n  -- The file records always contain exactly six fields.
+ * \n  -- The file has column headers on the first line.
  */
 // ----------------------------------------------------------------------------
 
@@ -54,7 +54,7 @@ struct ZipCodeRecord {
     double longitude = 0.0;
 };
 
-/// @brief The ZipCodeBuffer class parses the CSV file one record at a time
+/// @brief The ZipCodeBuffer class parses the file one record at a time
 ///     and returns the fields in a ZipCodeRecord struct.
 class ZipCodeBuffer {
 private:
@@ -66,15 +66,15 @@ private:
 
 public:
     /**
-     * @brief Constructor that accepts the CSV filename.
-     * @pre The CSV file has one column header row to skip.
-     * @post The CSV file is opened and the first header row
-     *         was skipped.
-     * @param fileName The name of the CSV file to open.
+     * @brief Constructor that accepts the filename.
+     * @pre The file has one column header row to skip.
+     * @post The file is opened and the header row is skipped.
+     * @param fileName The name of the file to open.
      * @param fileType The type of the file. Case insensitive, stored in uppercase.
-     * \n  -- 'C' = CSV, comma-separated values
+     * \n  -- 'C' = CSV, comma-separated values.
      * \n  -- 'L' = Length-indicated file structure format with the first field
      *              describing the length of the record.
+     * \n  -- 'B' = Blocked length-indicated records.
      */
     ZipCodeBuffer(std::string fileName, char fileType);
 
@@ -82,15 +82,36 @@ public:
     ~ZipCodeBuffer();
 
     /**
-     * @brief Reads the next ZIP Code record from the CSV file.
+     * @brief Parses a string into a ZipCodeRecord struct.
+     * 
+     * @pre Receives a string to parse.
+     * @post The ZipCodeRecord struct is filled with data from the string and returned.
      *
-     * This function reads the next line from the CSV file, parses it into a
+     * @param recordString The string to parse into a ZipCodeRecord struct.
+     * \n It must have six fields separated by commas and be in this order:
+     * \n  -- ZIP Code (string)
+     * \n  -- Place Name (string)
+     * \n  -- State (string)
+     * \n  -- County (string)
+     * \n  -- Latitude (double)
+     * \n  -- Longitude (double)
+     * 
+     * @return Returns the ZipCodeRecord struct filled with data parsed from the string.
+     * \n If the record string is malformed, it returns an empty string for the zipCode
+     *    field as the terminal string.
+     */
+    ZipCodeRecord parseRecord(std::string);
+
+    /**
+     * @brief Reads the next ZIP Code record from the file.
+     *
+     * This function reads the next line from the file, parses it into a
      * ZipCodeRecord struct, and returns it.
      * 
-     * @pre The next CSV record must have exactly six fields.
+     * @pre The next record must have exactly six fields.
      * @post The next record in the file was returned.
      *
-     * @return The next ZIP Code record from the CSV file. When it reaches the
+     * @return The next ZIP Code record from the file. When it reaches the
      *      end of the file or an invalid record, it returns a ZIP code of ""
      *      as a terminal string.
      */
