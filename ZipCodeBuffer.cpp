@@ -8,6 +8,7 @@
 #include <vector> 
 #include <sstream> 
 #include "ZipCodeBuffer.h"
+//#include "BlockBuffer.h"
 
 /// @brief Constructor that accepts the CSV filename.
 ZipCodeBuffer::ZipCodeBuffer(std::string fileName, char fileType = 'L') : fileName(fileName), fileType(std::toupper(fileType)) {
@@ -35,51 +36,79 @@ ZipCodeBuffer::~ZipCodeBuffer() {
     }
 };
 
+/// @brief Parses a string into a ZipCodeRecord struct.
+ZipCodeRecord ZipCodeBuffer::parseRecord(std::string recordString) {
+    ZipCodeRecord record;
+
+    std::istringstream recordStream(recordString);
+    std::string field;
+
+    // Parse the record fields using istringstream 
+    std::vector<std::string> fields;
+    while (getline(recordStream, field, ',')) {
+        fields.push_back(field);
+    }
+
+    if (fields.size() == 6)
+    {
+        // Fill the ZipCodeRecord struct with the data from the record
+        record.zipCode = fields[0];
+        record.placeName = fields[1];
+        record.state = fields[2];
+        record.county = fields[3];
+        record.latitude = std::stod(fields[4]);  // Convert string to double 
+        record.longitude = std::stod(fields[5]);
+    }
+    else
+    {
+        // The record is malformed and does not have 6 fields. Return terminal string
+        record.zipCode = "";
+        std::cerr << "A record contains an invalid number of fields: "
+            << recordString << std::endl;
+    }
+
+    return record;
+};
+
 /// @brief Reads the next ZIP Code record from the file.
 ZipCodeRecord ZipCodeBuffer::readNextRecord() {
     ZipCodeRecord record;
-    std::string line;
+    std::string recordString;
 
+    /*
+    if (fileType == 'B')
+    {
+        BlockBuffer blockBuffer; // TODO can it construct an empty buffer like this?
+        // TODO if it can, then it should be stored in the class rather than in this scope
+
+        if (blockRecordsIndex > blockRecords.size())
+        {
+            // Reached the end of the block, so retrieve the next one
+            
+            // TODO needs block buffer to retrieve the next block and store the vector in blockRecords
+        }
+        
+    }
+    */
+    
     if (fileType == 'C')
     {
-        getline(file, line);
+        // If CSV, retrieve the next line in the file as the record to parse
+        getline(file, recordString);
     }
     else if (fileType == 'L')
     {
+        // If length-indicated, reads the length and retrieves that many characters for the record
         int numCharactersToRead = 0;
-        file >> numCharactersToRead;          // Read the length indicator, the first field in each record.
-        file.ignore(1);                       // Skip the comma after the length field
-        line.resize(numCharactersToRead);
-        file.read(&line[0], numCharactersToRead);
+        file >> numCharactersToRead;   // Read the length indicator, the first field in each record
+        file.ignore(1);                // Skip the comma after the length field
+        recordString.resize(numCharactersToRead);
+        file.read(&recordString[0], numCharactersToRead);
     }
 
     if (!file.eof()) {
-        std::istringstream ss(line);
-        std::string token;
-
-        // Parse the CSV record fields using istringstream 
-        std::vector<std::string> tokens;
-        while (getline(ss, token, ',')) {
-            tokens.push_back(token);
-        }
-
-        if (tokens.size() == 6)
-        {
-            // Fill the ZipCodeRecord struct with the data from the CSV record
-            record.zipCode = tokens[0];
-            record.placeName = tokens[1];
-            record.state = tokens[2];
-            record.county = tokens[3];
-            record.latitude = std::stod(tokens[4]);  // Convert string to double 
-            record.longitude = std::stod(tokens[5]);
-        }
-        else
-        {
-            // The record is malformed and does not have 6 fields. Return terminal character
-            record.zipCode = "";
-            std::cerr << "A record in the file contains an invalid number of fields: "
-                << line << std::endl;
-        }
+        // If not the end of the file, read the fields in the line into the record object
+        record = parseRecord(recordString);
     }
     else {
         // End of file reached. Return terminal character
