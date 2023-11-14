@@ -10,7 +10,7 @@
  /**
   * @details
   *
-  * The BlockedSSGenerator class converts the length-indicated data into blocked data.
+  * The BlockedSSGenerator program converts the length-indicated data into blocked data.
   * Block size is 512 bytes, and the minimum block capacity is 50%. All records in blocks are complete.
   * Blocks are separated on different lines (end of line character), and records within a block are only distinct
   * via length indication.
