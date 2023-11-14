@@ -62,6 +62,7 @@
 
 int main(int argc, char* argv[]) {
 
+    std::ifstream file;
     std::string fileName;
     char fileType = 'L'; // Default to length-indicated file type
 
@@ -72,11 +73,10 @@ int main(int argc, char* argv[]) {
         std::cin >> fileName;
 
         // Attempt to open the file
-        std::ifstream file(fileName);
+        file.open(fileName);
 
         if (file.is_open()) {
             std::cout << "File successfully opened." << std::endl;
-            file.close(); // Check for a valid file succeeded
             break;  // Exit the loop when a valid file is provided
         }
         else {
@@ -89,13 +89,15 @@ int main(int argc, char* argv[]) {
     {
         fileType = 'C';
     }
+    //else
+    //{
+    //    // TODO read from file metadata to determine whether it is length-indicated or blocked
+    //}
+    
 
     // Create a ZipCodeBuffer using the file name of the CSV containing the records
-    ZipCodeBuffer buffer(fileName, fileType);
+    ZipCodeBuffer buffer(file, fileType);
     ZipCodeRecord record;
-
-
-
 
 
     // If no arguments, display the table
@@ -109,13 +111,13 @@ int main(int argc, char* argv[]) {
 
 
 
-
         // Iterate through records until the terminal string "" is returned from the buffer
         while (true)
         {
             ZipCodeRecord record = buffer.readNextRecord();
             if (record.zipCode == "") {
                 // Exit the loop if the terminal string "" was returned from the buffer
+                
                 break;
             }
 
@@ -196,7 +198,8 @@ int main(int argc, char* argv[]) {
 
         // Generate an index (and delete the variable)
         {
-            ZipCodeIndexer index(fileName, fileType, fileName + "_index.txt");
+            std::ifstream searchFile(fileName);
+            ZipCodeIndexer index(searchFile, fileType, fileName + "_index.txt");
             index.createIndex();
             index.writeIndexToFile();
         }
@@ -231,5 +234,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    file.close();
     return 0;
 }

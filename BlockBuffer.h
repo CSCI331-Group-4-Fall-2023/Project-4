@@ -24,29 +24,41 @@ using namespace std;
 
 class BlockBuffer {
 private: 
-    string block;               // The current block in string form
+    std::ifstream &file;              // The ifstream to read blocks from.
+    string block = "";               // The current block in string form
     int numRecordsInBlock = 0;  // Number of records in the current block (read from metadata)
-    int rbn = -1;               // Relative Block Number (RBN) of the current block
-    int rbnPrev = -1;           // RBN of the previous block in the linked list
-    int rbnNext = -1;           // RBN of the next block in the linked list 
+    int currentRBN = -1;        // Relative Block Number (RBN) of the current block
+    int prevRBN = -1;           // RBN of the previous block in the linked list
+    int nextRBN = -1;           // RBN of the next block in the linked list 
+    int blockSize = 512; // TODO replace hardcoded 512 MB with reading from the header record buffer
+    int headerSize = 55; // TODO replace hardcoded with reading from header record buffer
 
 
 public:
-    // Constructors
-    /**
-     * @brief Default Constructor: Construct a new Block Buffer object
-     * @pre: None
-     * @post: A new Block Buffer object is created
-     */
-    BlockBuffer() { block = ""; }
-
+    
+    // // Constructors
+    // /**
+    //  * @brief Default Constructor: Construct a new Block Buffer object
+    //  * @pre: None
+    //  * @post: A new Block Buffer object is created
+    //  */
+    // BlockBuffer() : block("") {}
+ 
+    // /**
+    //  * @brief Construct a new Block Buffer object
+    //  * @param block is the block to set
+    //  * @pre: The block is a string
+    //  * @post: A new Block Buffer object is created
+    //  */
+    // BlockBuffer(string block) : block(block) {}
+    
     /**
      * @brief Construct a new Block Buffer object
-     * @param String block is the block to set
+     * @param file is the file to set
      * @pre: The block is a string
      * @post: A new Block Buffer object is created
      */
-    BlockBuffer(string block) { this->block = block; }
+    BlockBuffer(std::ifstream &file) : file(file) {}
 
     // Getters and setters
     /**
@@ -73,13 +85,52 @@ public:
      */
     vector<string> createRecords();
     
+    
+
+    /**
+     * @brief Reads the block metadata for the current block.
+     * @pre blockStream is at the start of the block before the 5 metadata fields.
+     * @post The 5 metadata fields have been read into the member variables and the istringstream
+     * pointer is after the metadata fields.
+    */
+    void readBlockMetadata();
+
+    // Metadata getters
+    int getCurrentRBN() const { return currentRBN; }
+    int getPrevRBN() const { return prevRBN; }
+    int getNextRBN() const { return nextRBN; }
+    int getNumRecordsInBlock() const { return numRecordsInBlock; }
+
 
 
     // TODO document
     // It is given friend access to ZipCodeBuffer
-    vector<string> readNextBlock(ifstream &);
-    vector<string> readPreviousBlock(ifstream &);
 
+    /**
+     * @brief Reads the next block and returns it as a vector of records in string form.
+     * @param file
+     * @return a vector of strings, the records within a block
+     * @pre: The file pointer is at the start of the block.
+     * @post: The block is broken down into records and the file pointer is after the block.
+     */
+    vector<string> readNextBlock();
+    vector<string> readPreviousBlock();
+
+
+
+
+
+
+
+    int calculateBlockAddress(int relativeBlockNumber);
+
+    /**
+     * @brief Moves the file pointer to the address of the block at the given Relative Block Number (RBN).
+     * @return None.
+     * @pre The file is open.
+     * @post The file pointer is moved to the start of the block at the given RBN.
+    */
+    void moveToBlock(int rbn);
 
 };
 

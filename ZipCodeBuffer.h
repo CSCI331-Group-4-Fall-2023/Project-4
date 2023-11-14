@@ -58,8 +58,7 @@ struct ZipCodeRecord {
 ///     and returns the fields in a ZipCodeRecord struct.
 class ZipCodeBuffer {
 private:
-    std::string fileName;
-    std::ifstream file;
+    std::ifstream &file;
     char fileType;
     vector<string> blockRecords; // Stores the current block of records if using a block file format
     int blockRecordsIndex = -1; // Default to index below 0 so it retrieves the first block on first check
@@ -77,10 +76,10 @@ public:
      *              describing the length of the record.
      * \n  -- 'B' = Blocked length-indicated records.
      */
-    ZipCodeBuffer(std::string fileName, char fileType);
+    ZipCodeBuffer(std::ifstream &file, char fileType);
 
-    /** @brief Destructor to close the file when done. */
-    ~ZipCodeBuffer();
+    //** @brief Destructor to close the file when done. */
+    //~ZipCodeBuffer();
 
     /**
      * @brief Parses a string into a ZipCodeRecord struct.

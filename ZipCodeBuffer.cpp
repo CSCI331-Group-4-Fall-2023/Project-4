@@ -10,31 +10,29 @@
 #include "ZipCodeBuffer.h"
 #include "BlockBuffer.h"
 
-/// @brief Constructor that accepts the CSV filename.
-ZipCodeBuffer::ZipCodeBuffer(std::string fileName, char fileType = 'L') : fileName(fileName), fileType(std::toupper(fileType)) {
-    file.open(fileName);
-    if (!file.is_open()) {
-        std::cerr << "Failed to open file: " << fileName << std::endl;
-    }
-    else if (this->fileType == 'C') {
+/// @brief Constructor that accepts the filename.
+ZipCodeBuffer::ZipCodeBuffer(std::ifstream &file, char fileType = 'L') : file(file), fileType(std::toupper(fileType)), blockBuffer(BlockBuffer(file)) {
+    if (this->fileType == 'C') {
         // If CSV, skip the header line.
         std::string line;
         getline(file, line); // Skip header line
     }
-    else if (this->fileType == 'L') {
-        // If length-indicated file, skip the header line.
+    else if (this->fileType == 'L' || this->fileType == 'B') {
+        // If length-indicated or blocked length-indicated file, skip the header line.
         std::string line;
         getline(file, line); // Skip header line
         // TODO skip the header record instead once implemented
     }
 };
 
-/// @brief Destructor to close the file when done.
+// @brief Destructor to close the file when done.
+/*
 ZipCodeBuffer::~ZipCodeBuffer() {
     if (file.is_open()) {
         file.close();
     }
 };
+*/
 
 /// @brief Parses a string into a ZipCodeRecord struct.
 ZipCodeRecord ZipCodeBuffer::parseRecord(std::string recordString) {
@@ -76,16 +74,13 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
     ZipCodeRecord record;
     std::string recordString;
 
-    ///*
+    /*
     if (fileType == 'B')
     {
-        BlockBuffer blockBuffer; // TODO can it construct an empty buffer like this?
-        // TODO if it can, then it should be stored in the class rather than in this scope
-
         if (blockRecordsIndex > blockRecords.size())
         {
             // Reached the end of the block, so retrieve the next one
-            blockRecords = blockBuffer.readNextBlock(file);
+            blockRecords = blockBuffer.readNextBlock();
             record = parseRecord(blockRecords[0]);
             blockRecordsIndex = 1; // skip 0 because it reads it immediately
 
@@ -98,7 +93,7 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
         
         
     }
-    //*/
+    */
     
     if (fileType == 'C')
     {

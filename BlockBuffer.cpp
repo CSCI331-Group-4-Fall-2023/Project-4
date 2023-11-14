@@ -8,6 +8,7 @@
 #include <vector>
 #include "BlockBuffer.h"
 //#include "ZipCodeBuffer.h"
+#include <sstream>
 
 using namespace std;
 
@@ -50,11 +51,73 @@ vector<string> BlockBuffer::createRecords() {
     
 }
 
-vector<string> BlockBuffer::readNextBlock(ifstream &file) {
+
+
+
+/// @brief Reads the block metadata for the current block.
+void BlockBuffer::readBlockMetadata() {
+    int metadataRecordLength = -1;
+    int newRelativeBlockNumber = -1;
+    int newNumRecordsInBlock = -1;
+    int newPrevRBN = -1;
+    int newNextRBN = -1;
+
+    file >> metadataRecordLength;
+    file.ignore(1); // Ignore the commas separating the fields
+    file >> newRelativeBlockNumber;
+    file.ignore(1);
+    file >> newNumRecordsInBlock;
+    file.ignore(1);
+    file >> newPrevRBN;
+    file.ignore(1);
+    file >> newNextRBN;
+    file.ignore(1); // Skip the comma after the last metadata field
+
+    // TODO throw exception if any of these reads failed
+
+    currentRBN = newRelativeBlockNumber;
+    numRecordsInBlock = newNumRecordsInBlock;
+    prevRBN = newPrevRBN;
+    nextRBN = newNextRBN;
+}
+
+
+
+/// @brief 
+int BlockBuffer::calculateBlockAddress(int relativeBlockNumber) {
+    // TODO change to RBN starting at 1 instead of 0 if needed
+    return headerSize + relativeBlockNumber*blockSize;
+}
+
+
+/// @brief Moves the file pointer to the address of the block at the given Relative Block Number (RBN).
+void BlockBuffer::moveToBlock(int relativeBlockNumber) {
+    int address = calculateBlockAddress(relativeBlockNumber);
+    file.seekg(address);
+}
+
+
+
+
+vector<string> BlockBuffer::readNextBlock() {
     // TODO read block metadata, including RBN links, to find the next line (and use ZipCodeBuffer.setCurrentPosition())
     // TODO needs to handle finding the first block in the file when there is no current block
+    // This will require metadata from the header (the length of the header record)
+    
     std::string line;
+    readBlockMetadata(); // TODO should instead pass string stream or something, change how the block is stored
     std::getline(file, line);
     setBlock(line);
+
+    // If the next RBN is -1, the end of the chain has been reached.
+    if (nextRBN == -1)
+    {
+        currentRBN = nextRBN;
+    }
+    
+    calculateBlockAddress(nextRBN);
+    
     return createRecords();
+
+    // TODO read links, navigate to them
 }
