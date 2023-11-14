@@ -24,30 +24,73 @@
             return;
         }
 
-        //good version for top line printing
-        /*
-        file<< "File structure type: "<< fileStructureType_ << " - File structure version: " << 
-        fileStructureVersion_ <<" - Header Size (bytes): " << headerSizeBytes_ <<" - Record Size (bytes): " << recordSizeBytes_ <<" - Size Format Type: "
-        << sizeFormatType_ <<" - block size: " << blockSize_ <<" - min block capacity: " << minimumBlockCapacity_ << " - Primary Key Index File: " 
-        << primaryKeyIndexFileName_ << " - Primary Key Index File scheam: " << primaryKeyIndexFileSchema_ <<  " - Record Count: " << recordCount_ 
-        << " - Block Count: " << blockCount_ << " - Field Count: " << fieldCount_ << " - Primary Key: " << primaryKeyFieldIndex_ << " - RBNA link: " 
-        << RBNA_ <<" - RBNS link: " << RBNS_<<" - Stale Flag link: " << staleFlag_ << std::endl;
-        */
         //version for seeing all the stuff
-        file << "Read Header:" << std::endl;
+        file << "Header:" << std::endl;
         file << " - File structure type: " << fileStructureType_ << std::endl;
         file << " - File structure version: " << fileStructureVersion_ << std::endl;
         file << " - Header Size (bytes): " << headerSizeBytes_ << std::endl;
         file << " - Record Size (bytes): " << recordSizeBytes_ << std::endl;
         file << " - Size Format Type: " << sizeFormatType_ << std::endl;
+        file << " - Block Size: " << blockSize_ << std::endl;
+        file << " - Minimum Block Capacity: " << minimumBlockCapacity_ << std::endl;
         file << " - Primary Key Index File: " << primaryKeyIndexFileName_ << std::endl;
+        file << " - Primary Key Index File Schema: " << primaryKeyIndexFileSchema_ << std::endl;
         file << " - Record Count: " << recordCount_ << std::endl;
+        file << " - Block Count: " << blockCount_ << std::endl;
         file << " - Field Count: " << fieldCount_ << std::endl;
         file << " - Primary Key: " << primaryKeyFieldIndex_ << std::endl;
+        file << " - RBN link for Avail List: " << RBNA_ << std::endl;
+        file << " - RBN link for active sequence set List: " << RBNS_ << std::endl;
+        file << " - Stale Flag: " << staleFlag_ << std::endl;
 
         for (const Field& field : fields_) {
             file << std::endl;
-            file << "- Fields:" << std::endl;
+            file << "Fields:" << std::endl;
+            file << "   - Zip Code: " << field.zipCode << std::endl;
+            file << "   - Place Name: " << field.placeName << std::endl;
+            file << "   - State: " << field.state << std::endl;
+            file << "   - County: " << field.county << std::endl;
+            file << "   - Latitude: " << field.latitude << std::endl;
+            file << "   - Longitude: " << field.longitude << std::endl;
+        }
+
+        file << std::endl;
+        file << "Data:" << std::endl;
+
+        file.close();
+    }
+    //version of writeHeader that prints to a file of choice rather than the file held by the object
+    void HeaderBuffer::writeHeaderTest(const std::string& filename) {
+        std::ofstream file(filename);
+
+        if (!file.is_open()) {
+            // Print an error mesage if the file cannot be opened
+            std::cerr << "Error opening the file." << std::endl;
+            return;
+        }
+
+        //version for seeing all the stuff
+        file << "Header:" << std::endl;
+        file << " - File structure type: " << fileStructureType_ << std::endl;
+        file << " - File structure version: " << fileStructureVersion_ << std::endl;
+        file << " - Header Size (bytes): " << headerSizeBytes_ << std::endl;
+        file << " - Record Size (bytes): " << recordSizeBytes_ << std::endl;
+        file << " - Size Format Type: " << sizeFormatType_ << std::endl;
+        file << " - Block Size: " << blockSize_ << std::endl;
+        file << " - Minimum Block Capacity: " << minimumBlockCapacity_ << std::endl;
+        file << " - Primary Key Index File: " << primaryKeyIndexFileName_ << std::endl;
+        file << " - Primary Key Index File Schema: " << primaryKeyIndexFileSchema_ << std::endl;
+        file << " - Record Count: " << recordCount_ << std::endl;
+        file << " - Block Count: " << blockCount_ << std::endl;
+        file << " - Field Count: " << fieldCount_ << std::endl;
+        file << " - Primary Key: " << primaryKeyFieldIndex_ << std::endl;
+        file << " - RBN link for Avail List: " << RBNA_ << std::endl;
+        file << " - RBN link for active sequence set List: " << RBNS_ << std::endl;
+        file << " - Stale Flag: " << staleFlag_ << std::endl;
+
+        for (const Field& field : fields_) {
+            file << std::endl;
+            file << "Fields:" << std::endl;
             file << "   - Zip Code: " << field.zipCode << std::endl;
             file << "   - Place Name: " << field.placeName << std::endl;
             file << "   - State: " << field.state << std::endl;
@@ -74,36 +117,73 @@
         }
 
         std::string line;
-
+        
         while (std::getline(file, line)) {
-            if (line.find("file structure type: ") != std::string::npos) {
+            if (line.find(" - File structure type: ") != std::string::npos) {
                 fileStructureType_ = line.substr(line.find(": ") + 2);
+                std::cout << line << "\n" << std::endl;
             }
-            else if (line.find("version of your file structure type: ") != std::string::npos) {
+            else if (line.find(" - File structure version: ") != std::string::npos) {
                 fileStructureVersion_ = line.substr(line.find(": ") + 2);
+                std::cout << line << "\n" << std::endl;
             }
-            else if (line.find("header record size in bytes: ") != std::string::npos) {
+            else if (line.find("- Header Size (bytes): ") != std::string::npos) {
                 headerSizeBytes_ = std::stoi(line.substr(line.find(": ") + 2));
+                std::cout << line << "\n" << std::endl;
             }
-            else if (line.find("count of bytes for each record size integer (if fixed-size): ") != std::string::npos) {
+            else if (line.find(" - Record Size (bytes): ") != std::string::npos) {
                 recordSizeBytes_ = std::stoi(line.substr(line.find(": ") + 2));
+                std::cout << line << "\n" << std::endl;
             }
-            else if (line.find("size format type {ASCII or binary}: ") != std::string::npos) {
+            else if (line.find(" - Size Format Type: ") != std::string::npos) {
                 sizeFormatType_ = line.substr(line.find(": ") + 2);
+                std::cout << line << "\n" << std::endl;
             }
-            else if (line.find("primary key index file name: ") != std::string::npos) {
+            else if (line.find(" - Block Size: ") != std::string::npos) {
+                blockSize_ = std::stoi(line.substr(line.find(": ") + 2));
+                std::cout << line << "\n" << std::endl;
+            }
+            else if (line.find(" - Minimum Block Capacity: ") != std::string::npos) {
+                minimumBlockCapacity_ = std::stoi(line.substr(line.find(": ") + 2));
+                std::cout << line << "\n" << std::endl;
+            }
+            else if (line.find(" - Primary Key Index File: ") != std::string::npos) {
                 primaryKeyIndexFileName_ = line.substr(line.find(": ") + 2);
+                std::cout << line << "\n" << std::endl;
             }
-            else if (line.find("record count: ") != std::string::npos) {
+            else if (line.find(" - Primary Key Index File Schema: ") != std::string::npos) {
+                primaryKeyIndexFileSchema_ = line.substr(line.find(": ") + 2);
+                std::cout << line << "\n" << std::endl;
+            }
+            else if (line.find(" - Record Count: ") != std::string::npos) {
                 recordCount_ = std::stoi(line.substr(line.find(": ") + 2));
+                std::cout << line << "\n" << std::endl;
             }
-            else if (line.find("count of fields per record: ") != std::string::npos) {
+            else if (line.find(" - Block Count: ") != std::string::npos) {
+                blockCount_ = std::stoi(line.substr(line.find(": ") + 2));
+                std::cout << line << "\n" << std::endl;
+            }
+            else if (line.find(" - Field Count: ") != std::string::npos) {
                 fieldCount_ = std::stoi(line.substr(line.find(": ") + 2));
+                std::cout << line << "\n" << std::endl;
             }
-            else if (line == "Primary Key: ") {
+            else if (line.find(" - Primary Key: ") != std::string::npos) {
                 primaryKeyFieldIndex_ = std::stoi(line.substr(line.find(": ") + 2));
+                std::cout << line << "\n" << std::endl;
             }
-            else if (line == " - Zip Code:") {
+            else if (line.find(" - RBN link for Avail List: ") != std::string::npos) {
+                RBNA_ = std::stoi(line.substr(line.find(": ") + 2));
+                std::cout << line << "\n" << std::endl;
+            }
+            else if (line.find(" - RBN link for active sequence set List: ") != std::string::npos) {
+                RBNS_ = std::stoi(line.substr(line.find(": ") + 2));
+                std::cout << line << "\n" << std::endl;
+            }
+            else if (line.find(" - Stale Flag: ") != std::string::npos) {
+                staleFlag_ = std::stoi(line.substr(line.find(": ") + 2));
+                std::cout << line << "\n" << std::endl;
+            }
+            else if (line.find("- Fields:") != std::string::npos) {
                 Field field;
                 while (std::getline(file, line)) {
                     if (line.find("   - Zip Code: ") != std::string::npos) {
@@ -209,7 +289,7 @@
     }
 
     /// @param staleFlag The tells if the header record is stale.
-    void HeaderBuffer::setstaleFlag(bool staleFlag) {
+    void HeaderBuffer::setstaleFlag(int staleFlag) {
         staleFlag_ = staleFlag;
     }
 
@@ -275,7 +355,7 @@
         return RBNS_;
     }
 
-    bool HeaderBuffer::getStaleFlag() const {
+    int HeaderBuffer::getStaleFlag() const {
         return staleFlag_;
     }
     //const std::vector<Field>& HeaderBuffer::getFields() const {
