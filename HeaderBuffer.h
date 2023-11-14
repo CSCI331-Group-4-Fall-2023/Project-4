@@ -69,6 +69,7 @@ public:
     /// @brief Write the header data to a file.
     /// @pre The file must be successfully opened for writing.
     void writeHeader();
+    void writeHeaderTest(const std::string& filename);
 
     /// @brief Read header data from a file.
     /// @pre The file must be successfully opened for reading.
@@ -89,7 +90,7 @@ public:
     void setPrimaryKeyFieldIndex(int primaryKeyFieldIndex);
     void setRBNA(int RBNA);
     void setRBNS(int RBNS);
-    void setstaleFlag(bool staleFlag);
+    void setstaleFlag(int staleFlag);
     void addField(const Field& field);
 
     std::string getFileStructureType() const;
@@ -106,7 +107,7 @@ public:
     int getPrimaryKeyFieldIndex() const;
     int getRBNA() const;
     int getRBNS() const;
-    bool getStaleFlag() const;
+    int getStaleFlag() const;
     const std::vector<Field>& getFields() const;
 
 private:
@@ -126,7 +127,7 @@ private:
     int primaryKeyFieldIndex_;
     int RBNA_;
     int RBNS_;
-    bool staleFlag_;
+    int staleFlag_;
     std::vector<Field> fields_;
 };
 #include "HeaderBuffer.cpp"

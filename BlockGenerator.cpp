@@ -30,7 +30,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    const int BLOCK_SIZE = 512;
+    const int BLOCK_SIZE = 510;
     const int BLOCK_CAPACITY = 0.75 * BLOCK_SIZE; // 75% of the block size
 
     // Check if the correct number of command line arguments were given
@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
     string currentLine;
     getline(readFile, currentLine); // Skipping metadata
     int currentBlockSize = 0;
-    int currentBlock = 1;
+    int currentBlock = 0;
     int numRecords = 0;
     vector<string> recordsInBlock;
     bool isLastBlock = false;

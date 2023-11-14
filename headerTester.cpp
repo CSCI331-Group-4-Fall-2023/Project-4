@@ -16,6 +16,8 @@ int main(){
     headerBuffer.setHeaderSizeBytes(256);
     headerBuffer.setRecordSizeBytes(128);
     headerBuffer.setSizeFormatType("ASCII");
+    headerBuffer.setBlockSize(54);
+    headerBuffer.setminimumBlockCapacity(6422);
     headerBuffer.setPrimaryKeyIndexFileName("index.txt");
     headerBuffer.setprimaryKeyIndexFileSchema("sample");
     headerBuffer.setRecordCount(1000);
@@ -24,7 +26,7 @@ int main(){
     headerBuffer.setPrimaryKeyFieldIndex(1);  // Set primary key index
     headerBuffer.setRBNA(1);
     headerBuffer.setRBNS(1);
-    headerBuffer.setstaleFlag(false);
+    headerBuffer.setstaleFlag(0);
 
     // Add fields
     HeaderBuffer::Field field1;
@@ -42,6 +44,7 @@ int main(){
     // Read the header from a file
     HeaderBuffer headerBuffer2("us_postal_codes.txt");
     headerBuffer2.readHeader();
+    headerBuffer2.writeHeaderTest("testread.txt");
     return 0;
 
 }
