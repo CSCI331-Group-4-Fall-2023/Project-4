@@ -14,7 +14,7 @@
  * \n The ZipCodeBuffer class reads a record from a file with these six fields:
  * \n  -- ZIP Code (string)
  * \n  -- Place Name (string)
- * \n  -- State Codes (string)
+ * \n  -- State Code (string)
  * \n  -- County (string)
  * \n  -- Latitude (double)
  * \n  -- Longitude (double)
@@ -42,7 +42,7 @@
 #include <string>
 #include <vector>
 #include <sstream>
-//#include "BlockBuffer.h"
+#include "BlockBuffer.h"
 
 /// @brief Structure to hold a ZIP Code record.
 struct ZipCodeRecord {
@@ -61,8 +61,9 @@ private:
     std::string fileName;
     std::ifstream file;
     char fileType;
-    //vector<ZipCodeRecord> blockRecords; // Stores the current block of records if using a block file format
-    //int blockRecordsIndex = -1; // Default to index below 0 so it retrieves the first block on first check
+    vector<string> blockRecords; // Stores the current block of records if using a block file format
+    int blockRecordsIndex = -1; // Default to index below 0 so it retrieves the first block on first check
+    BlockBuffer blockBuffer; // Stores the block metadata if using a block file format
 
 public:
     /**
@@ -91,7 +92,7 @@ public:
      * \n It must have six fields separated by commas and be in this order:
      * \n  -- ZIP Code (string)
      * \n  -- Place Name (string)
-     * \n  -- State (string)
+     * \n  -- State Code (string)
      * \n  -- County (string)
      * \n  -- Latitude (double)
      * \n  -- Longitude (double)
@@ -121,6 +122,9 @@ public:
     std::streampos getCurrentPosition();
     /// @brief Method to set the current position in the file to a given streampos.
     std::ifstream& setCurrentPosition(std::streampos);
+
+    // Give BlockBuffer access to private member functions and variables.
+    friend class BlockBuffer;
 };
 
 #endif // ZIPCODEBUFFER_H

@@ -1,28 +1,13 @@
-// ----------------------------------------------------------------------------
-/**
- * @file BlockBuffer.cpp
- * @class BlockBuffer
- * @brief This class unpacks a record from a block into a record buffer
- * @author Andrew Clayton
- * @date 11/9/2023
- * @version 1.0
- */
- // ----------------------------------------------------------------------------
- /**
-  * @details
-  *
-  * The block buffer unpacks a record from a block into a record buffer.
-  * So this will break down a block into indiviual records (as an array of strings)
-  */
-  // ----------------------------------------------------------------------------
-
-
+/// @file BlockBuffer.cpp
+/// @class BlockBuffer
+/// See BlockBuffer.h for full documentation.
 
 #include <iostream>
 #include <fstream> // for file operations
 #include <string>
 #include <vector>
 #include "BlockBuffer.h"
+//#include "ZipCodeBuffer.h"
 
 using namespace std;
 
@@ -63,4 +48,13 @@ vector<string> BlockBuffer::createRecords() {
 
     return records;
     
+}
+
+vector<string> BlockBuffer::readNextBlock(ifstream &file) {
+    // TODO read block metadata, including RBN links, to find the next line (and use ZipCodeBuffer.setCurrentPosition())
+    // TODO needs to handle finding the first block in the file when there is no current block
+    std::string line;
+    std::getline(file, line);
+    setBlock(line);
+    return createRecords();
 }

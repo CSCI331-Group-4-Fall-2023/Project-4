@@ -8,7 +8,7 @@
 #include <vector> 
 #include <sstream> 
 #include "ZipCodeBuffer.h"
-//#include "BlockBuffer.h"
+#include "BlockBuffer.h"
 
 /// @brief Constructor that accepts the CSV filename.
 ZipCodeBuffer::ZipCodeBuffer(std::string fileName, char fileType = 'L') : fileName(fileName), fileType(std::toupper(fileType)) {
@@ -70,12 +70,13 @@ ZipCodeRecord ZipCodeBuffer::parseRecord(std::string recordString) {
     return record;
 };
 
+
 /// @brief Reads the next ZIP Code record from the file.
 ZipCodeRecord ZipCodeBuffer::readNextRecord() {
     ZipCodeRecord record;
     std::string recordString;
 
-    /*
+    ///*
     if (fileType == 'B')
     {
         BlockBuffer blockBuffer; // TODO can it construct an empty buffer like this?
@@ -84,12 +85,20 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
         if (blockRecordsIndex > blockRecords.size())
         {
             // Reached the end of the block, so retrieve the next one
-            
+            blockRecords = blockBuffer.readNextBlock(file);
+            record = parseRecord(blockRecords[0]);
+            blockRecordsIndex = 1; // skip 0 because it reads it immediately
+
             // TODO needs block buffer to retrieve the next block and store the vector in blockRecords
         }
+        else if (blockRecordsIndex < blockRecords.size()) // TODO logic could likely be changed
+        {
+            record = parseRecord(blockRecords[blockRecordsIndex]);
+        }
+        
         
     }
-    */
+    //*/
     
     if (fileType == 'C')
     {

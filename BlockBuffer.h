@@ -4,6 +4,7 @@
  * @class BlockBuffer
  * @brief This class unpacks a record from a block into a record buffer
  * @author Andrew Clayton
+ * @author Kent Biernath
  * @date 11/9/2023
  * @version 1.0
  */
@@ -23,7 +24,12 @@ using namespace std;
 
 class BlockBuffer {
 private: 
-    string block;
+    string block;               // The current block in string form
+    int numRecordsInBlock = 0;  // Number of records in the current block (read from metadata)
+    int rbn = -1;               // Relative Block Number (RBN) of the current block
+    int rbnPrev = -1;           // RBN of the previous block in the linked list
+    int rbnNext = -1;           // RBN of the next block in the linked list 
+
 
 public:
     // Constructors
@@ -67,6 +73,14 @@ public:
      */
     vector<string> createRecords();
     
+
+
+    // TODO document
+    // It is given friend access to ZipCodeBuffer
+    vector<string> readNextBlock(ifstream &);
+    vector<string> readPreviousBlock(ifstream &);
+
+
 };
 
 //#include "BlockBuffer.cpp"
