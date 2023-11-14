@@ -151,42 +151,42 @@ int main(int argc, char* argv[]) {
             currentBlockSize = 0; numRecords = 0; recordsInBlock.clear(); // clear individual variables, and clear the vector of records
 
         }
-        // By now, all records have been aggregated into blocks
+    }
+    
+    // By now, all records have been aggregated into blocks
 
-        // If the last block is not full, it needs padding, and 
-        // this also would mean it did not even get printed, or its metadata. (since capacity length wasn't exceeded)
-        // So we need to write the metadata for the last block, and then add padding to it.
-        if (currentBlockSize > 0 && currentBlockSize < BLOCK_CAPACITY) {
-            // We first write the metadata, and add the length of this to the length of the records.
-             string metadata = "";
+    // If the last block is not full, it needs padding, and 
+    // this also would mean it did not even get printed, or its metadata. (since capacity length wasn't exceeded)
+    // So we need to write the metadata for the last block, and then add padding to it.
+    if (currentBlockSize > 0 && currentBlockSize < BLOCK_CAPACITY) {
+        // We first write the metadata, and add the length of this to the length of the records.
+            string metadata = "";
 
-            string rbn = to_string(currentBlock++); // block calculation -- should work to increment the block number after saving
-            string numRecordsS = to_string(recordsInBlock.size()); // num records string
-            string prevBlock = to_string(currentBlock - 1);
-            string nextBlock = to_string(currentBlock + 1);
+        string rbn = to_string(currentBlock++); // block calculation -- should work to increment the block number after saving
+        string numRecordsS = to_string(recordsInBlock.size()); // num records string
+        string prevBlock = to_string(currentBlock - 1);
+        string nextBlock = to_string(currentBlock + 1);
 
-            // Checks for first and last block            
-            if (currentBlock == 0) prevBlock = "-1";
-            if (readFile.eof()) string nextBlock = "-1"; // this may not be correct!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!
-
-
-            metadata += rbn + "," + numRecordsS + "," + prevBlock + "," + nextBlock + ",";
-
-            // Writing metadata, with length indication. 1 added to length for our added comma
-            writeFile << metadata.length()+1 << "," << metadata << "\n";
-
-            for (string record : recordsInBlock) { // adding each record to the block
-                writeFile << record;
-            }
+        // Checks for first and last block            
+        if (currentBlock == 0) prevBlock = "-1";
+        if (readFile.eof()) string nextBlock = "-1"; // this may not be correct!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! !!!!!!!!!!!!!!!
 
 
-            currentBlockSize += metadata.length();
-            for (int i = 0; i < BLOCK_SIZE - currentBlockSize; i++) {
-                writeFile << "~";
-            }
-            // updating variables for next iteration
+        metadata += rbn + "," + numRecordsS + "," + prevBlock + "," + nextBlock + ",";
+
+        // Writing metadata, with length indication. 1 added to length for our added comma
+        writeFile << metadata.length()+1 << "," << metadata << "\n";
+
+        for (string record : recordsInBlock) { // adding each record to the block
+            writeFile << record;
         }
 
+
+        currentBlockSize += metadata.length();
+        for (int i = 0; i < BLOCK_SIZE - currentBlockSize; i++) {
+            writeFile << "~";
+        }
+        // updating variables for next iteration
     }
 
 
