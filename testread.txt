@@ -1,19 +1,19 @@
 Header:
- - File structure type: 1.0
- - File structure version: 1.0
+ - File structure type: 3.0
+ - File structure version: 2.0
  - Header Size (bytes): 256
- - Record Size (bytes): 128
+ - Record Size (bytes): 357
  - Size Format Type: ASCII
  - Block Size: 54
  - Minimum Block Capacity: 6422
  - Primary Key Index File: index.txt
  - Primary Key Index File Schema: sample
  - Record Count: 1000
- - Block Count: 1001
+ - Block Count: 10622
  - Field Count: 5
- - Primary Key: 1
- - RBN link for Avail List: 1
- - RBN link for active sequence set List: 1
+ - Primary Key: 2
+ - RBN link for Avail List: 3
+ - RBN link for active sequence set List: 4
  - Stale Flag: 0
 
 Fields:
