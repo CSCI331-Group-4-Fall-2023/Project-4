@@ -4,7 +4,7 @@
  * @brief This class creates an index file for a blocked data file. 
  * @author Andrew Clayton
  * @date 11/13/2023
- * @version 1.2
+ * @version 1.3
  */
 // ----------------------------------------------------------------------------
 /**
@@ -20,6 +20,7 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include "HeaderBuffer.h"
 
 using namespace std;
 
@@ -35,9 +36,17 @@ int findZipcode(const string& record) {
 
 
 int main() {
-    ofstream writeFile("blockedIndex.txt");
+
+    // We need to first read and write the header of the file
+    HeaderBuffer header = HeaderBuffer("blocked_postal_codes.txt");
+    header.readHeader();
+    header.writeHeaderToFile("blocked_Index.txt");
+
+
+    ofstream writeFile;
+    writeFile.open("blocked_Index.txt", ios::app);
     if (!writeFile.is_open()) {
-        cerr << "Error: Could not open file 'blockedIndex.txt' for writing.\n";
+        cerr << "Error: Could not open file 'blocked_Index.txt' for writing.\n";
         return 1;
     }
     
