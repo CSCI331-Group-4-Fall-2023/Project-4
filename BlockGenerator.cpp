@@ -121,6 +121,25 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    // Anything left in the vector now will be the last block
+    isLastBlock = true;
+
+    // We need to print out everything left in the vector
+    string metadata = to_string(currentBlock) + "," + to_string(numRecords) + "," + (currentBlock == 0 ? "-1" : to_string(currentBlock - 1)) + "," + (isLastBlock ? "-1" : to_string(currentBlock + 1)) + ",";
+    int metadataLength = metadata.length() + 3; // Including LI and comma and ending comma
+
+    // Write metadata and records
+    // Metadata format: LI,RBN,#ofRecords,prevBlock,nextBlock,
+    writeFile << metadataLength << "," << metadata;
+    for (const string& record : recordsInBlock) {
+        writeFile << record;
+    }
+
+    // Pad the block with '~'
+    for (int i = 0; i < BLOCK_SIZE - currentBlockSize - metadataLength; i++) {
+        writeFile << "~";
+    }
+
     readFile.close();
     writeFile.close();
     return 0;
