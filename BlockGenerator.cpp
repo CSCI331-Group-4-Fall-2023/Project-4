@@ -4,7 +4,7 @@
  * @brief File for generating a blocked sequence set
  * @author Andrew Clayton
  * @date 11/13/2023
- * @version 1.3
+ * @version 1.4
  */
  // ----------------------------------------------------------------------------
  /**
@@ -38,7 +38,7 @@ int main(int argc, char* argv[]) {
     // We need to first read and write the header of the file
     HeaderBuffer header = HeaderBuffer("us_postal_codes.txt");
     header.readHeader();
-    header.writeHeaderTest("blocked_postalcodes.txt");
+    header.writeHeaderToFile("blocked_postal_codes.txt");
 
     // Now we can proceed with the blocked data generation, but we have to make sure the file opens up where we left off
 
@@ -52,16 +52,18 @@ int main(int argc, char* argv[]) {
 
     // File to write data out to
     string blockedDataFile = argv[1]; // Assumes the first command line argument is the file name
-    ofstream writeFile(blockedDataFile + ".txt");
+    ofstream writeFile;
+    // we need to append to the file, not overwrite it
+    writeFile.open(blockedDataFile + ".txt", ios::app);
     if (!writeFile.is_open()) {
         cerr << "Error: Could not open file " << blockedDataFile << " for writing.\n";
         return 1;
-    }
+    }  
     
     // File to read information from
-    ifstream readFile("us_postal_codes.txt");
+    ifstream readFile("uspostal_codes.txt");
     if (!readFile.is_open()) {
-        cerr << "Error: Could not open file us_postal_codes.txt for reading.\n";
+        cerr << "Error: Could not open file uspostal_codes.txt for reading.\n";
         return 1;
     }
 
