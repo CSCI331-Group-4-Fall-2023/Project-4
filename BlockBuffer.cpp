@@ -12,13 +12,25 @@
 
 using namespace std;
 
-vector<string> BlockBuffer::createRecords() {
+vector<string> BlockBuffer::unpackBlockRecords() {
     // This will convert a block to a vector of records
     size_t idx = 0;
     vector<string> records;
-    // int currentRecordLength;
 
+    for (size_t i = 0; i < getNumRecordsInBlock(); i++)
+    {
+        // If length-indicated, reads the length and retrieves that many characters for the record
+        std::string recordString;
+        int numCharactersToRead = 0;
+        file >> numCharactersToRead;   // Read the length indicator, the first field in each record
+        file.ignore(1);                // Skip the comma after the length field
+        recordString.resize(numCharactersToRead);
+        file.read(&recordString[0], numCharactersToRead);
+        records.push_back(recordString);
+    }
 
+    // This code was not working for me, but it may have features that should still be implemented
+    /*
     while (idx < block.length()) {
         // Reached filler characters of block (end of block)
         if (block[idx] == '~') {
@@ -46,11 +58,10 @@ vector<string> BlockBuffer::createRecords() {
         }
 
     }
-
-    return records;
+    */
     
+    return records;
 }
-
 
 
 
@@ -61,7 +72,7 @@ void BlockBuffer::readBlockMetadata() {
     int newNumRecordsInBlock = -1;
     int newPrevRBN = -1;
     int newNextRBN = -1;
-
+    
     file >> metadataRecordLength;
     file.ignore(1); // Ignore the commas separating the fields
     file >> newRelativeBlockNumber;
@@ -73,7 +84,7 @@ void BlockBuffer::readBlockMetadata() {
     file >> newNextRBN;
     file.ignore(1); // Skip the comma after the last metadata field
 
-    // TODO throw exception if any of these reads failed
+    // TODO throw exception if any of these reads failed or the values are invalid
 
     currentRBN = newRelativeBlockNumber;
     numRecordsInBlock = newNumRecordsInBlock;
@@ -83,11 +94,12 @@ void BlockBuffer::readBlockMetadata() {
 
 
 
-/// @brief 
+/// @brief Calculates the address of a Relative Block Number (RBN) within the file.
 int BlockBuffer::calculateBlockAddress(int relativeBlockNumber) {
     // TODO change to RBN starting at 1 instead of 0 if needed
     return headerSize + relativeBlockNumber*blockSize;
 }
+
 
 
 /// @brief Moves the file pointer to the address of the block at the given Relative Block Number (RBN).
@@ -98,26 +110,25 @@ void BlockBuffer::moveToBlock(int relativeBlockNumber) {
 
 
 
-
+/// @brief Reads the next block and returns it as a vector of records in string form.
 vector<string> BlockBuffer::readNextBlock() {
-    // TODO read block metadata, including RBN links, to find the next line (and use ZipCodeBuffer.setCurrentPosition())
-    // TODO needs to handle finding the first block in the file when there is no current block
-    // This will require metadata from the header (the length of the header record)
-    
+    vector<string> recordStrings;
     std::string line;
-    readBlockMetadata(); // TODO should instead pass string stream or something, change how the block is stored
-    std::getline(file, line);
-    setBlock(line);
+
 
     // If the next RBN is -1, the end of the chain has been reached.
     if (nextRBN == -1)
     {
-        currentRBN = nextRBN;
+        currentRBN = -1;
+        file.ignore(1); // Ignore a newline at the end of the file, if any
+        return recordStrings;
     }
     
-    calculateBlockAddress(nextRBN);
-    
-    return createRecords();
+    moveToBlock(nextRBN);               // Move to the next block
+    readBlockMetadata();                // Read the metadata for the block
 
-    // TODO read links, navigate to them
+    recordStrings = unpackBlockRecords(); // Split the block into record strings
+    //std::getline(file, line);   // Read the remainder of the line to get to the next physical block
+
+    return recordStrings;
 }

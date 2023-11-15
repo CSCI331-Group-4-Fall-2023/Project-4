@@ -2,20 +2,35 @@
 /**
  * @file BlockBuffer.h
  * @class BlockBuffer
- * @brief This class unpacks a record from a block into a record buffer
- * @author Andrew Clayton
+ * @brief Reads blocks of length-indicated records from a blocked file.
  * @author Kent Biernath
- * @date 11/9/2023
+ * @author Andrew Clayton
+ * @date 2023-11-14
  * @version 1.0
  */
- // ----------------------------------------------------------------------------
- /**
-  * @details
-  *
-  * The block buffer unpacks a record from a block into a record buffer.
-  * So this will break down a block into indiviual records (as an array of strings)
-  */
-  // ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+/**
+ * @details
+ * \n Reads a block of length-indicated records from a blocked file, which is
+ *    passed to the buffer by reference in the constructor.
+ * \n
+ * \n  Each block starts with these five metadata fields:
+ * \n  -- Length of metadata record (int)
+ * \n  -- Relative Block Number (int)
+ * \n  -- Number of records in the block (int)
+ * \n  -- Previous Relative Block Number (int)
+ * \n  -- Next Relative Block Number (int)
+ * \n
+ * \n The Relative Block Number (RBN) is used to navigate the file and starts
+ *    at 0 for the first block. The Previous RBN and Next RBN are used to
+ *    navigate the file in logical order. A Previous/Next RBN of -1 means the
+ *    block is the first/last block.
+ * \n
+ * \n The records within each block are length-indicated and have no other
+ *    delimiters. The length field is separated from the rest of the record
+ *    by a comma delimiter.
+ */
+// ----------------------------------------------------------------------------
 
 #ifndef BLOCKBUFFER_H
 #define BLOCKBUFFER_H
@@ -24,76 +39,41 @@ using namespace std;
 
 class BlockBuffer {
 private: 
-    std::ifstream &file;              // The ifstream to read blocks from.
-    string block = "";               // The current block in string form
+    std::ifstream &file;        // The ifstream to read blocks from.
     int numRecordsInBlock = 0;  // Number of records in the current block (read from metadata)
-    int currentRBN = -1;        // Relative Block Number (RBN) of the current block
+    int currentRBN = 0;         // Relative Block Number (RBN) of the current block
     int prevRBN = -1;           // RBN of the previous block in the linked list
-    int nextRBN = -1;           // RBN of the next block in the linked list 
-    int blockSize = 512; // TODO replace hardcoded 512 MB with reading from the header record buffer
-    int headerSize = 55; // TODO replace hardcoded with reading from header record buffer
+    int nextRBN = 0;            // RBN of the next block in the linked list 
+    int blockSize = 512; // TODO replace hardcoded 512 bytes with reading from the header record buffer
+    int headerSize = 53; // TODO replace hardcoded bytes with reading from header record buffer
 
 
 public:
-    
-    // // Constructors
-    // /**
-    //  * @brief Default Constructor: Construct a new Block Buffer object
-    //  * @pre: None
-    //  * @post: A new Block Buffer object is created
-    //  */
-    // BlockBuffer() : block("") {}
- 
-    // /**
-    //  * @brief Construct a new Block Buffer object
-    //  * @param block is the block to set
-    //  * @pre: The block is a string
-    //  * @post: A new Block Buffer object is created
-    //  */
-    // BlockBuffer(string block) : block(block) {}
-    
     /**
-     * @brief Construct a new Block Buffer object
-     * @param file is the file to set
-     * @pre: The block is a string
-     * @post: A new Block Buffer object is created
+     * @brief Construct a new Block Buffer object.
+     * @param file The file to read.
+     * @pre: The block is a string.
+     * @post: A new Block Buffer object is created.
      */
     BlockBuffer(std::ifstream &file) : file(file) {}
 
-    // Getters and setters
-    /**
-     * @brief Get the block
-     * @return the block as a string
-     * @pre: The block is a string
-     * @post: The block is returned
-    */
-    string getBlock() const { return block; }
 
     /**
-     * @brief Set the block
-     * @param block the block to set
-     * @pre: The block is a string
-     * @post: The block is set
-    */
-    void setBlock(string block) { this->block = block; }
-
-    /**
-     * @brief Creates a vector of records (stored as strings at this point) from a block.
-     * @return a vector of strings, the records within a block
-     * @pre: The block is a string
-     * @post: The block is broken down into records
+     * @brief Unpacks the length-indicated records from the block into a string vector.
+     * @return A vector of strings, the records within a block.
+     * @pre: The file pointer is at the start of the records within the block after the block metadata was read.
+     * @post: The block is unpacked into individual strings for each record in the block, returned as a vector.
      */
-    vector<string> createRecords();
-    
+    vector<string> unpackBlockRecords();
     
 
     /**
      * @brief Reads the block metadata for the current block.
-     * @pre blockStream is at the start of the block before the 5 metadata fields.
-     * @post The 5 metadata fields have been read into the member variables and the istringstream
-     * pointer is after the metadata fields.
+     * @pre The file pointer is at the start of the block before the 5 metadata fields.
+     * @post The 5 metadata fields have been read into the member variables and the file pointer is after the metadata.
     */
     void readBlockMetadata();
+
 
     // Metadata getters
     int getCurrentRBN() const { return currentRBN; }
@@ -102,35 +82,32 @@ public:
     int getNumRecordsInBlock() const { return numRecordsInBlock; }
 
 
-
-    // TODO document
-    // It is given friend access to ZipCodeBuffer
-
     /**
      * @brief Reads the next block and returns it as a vector of records in string form.
-     * @param file
-     * @return a vector of strings, the records within a block
+     * @return A vector of strings where each string represents a record within the block.
+     * \n      The length indication field for each record is read but not returned in the string.
      * @pre: The file pointer is at the start of the block.
-     * @post: The block is broken down into records and the file pointer is after the block.
+     * @post: The block is broken down into records and the file pointer is after the records in the block.
      */
     vector<string> readNextBlock();
-    vector<string> readPreviousBlock();
+    //vector<string> readPreviousBlock();
 
 
-
-
-
-
-
+    /**
+     * @brief Calculates the address of a Relative Block Number (RBN) within the file.
+     * @return The address of the RBN.
+     * @pre The file metadata has been read.
+     * @post The calculation results have been returned.
+    */
     int calculateBlockAddress(int relativeBlockNumber);
+
 
     /**
      * @brief Moves the file pointer to the address of the block at the given Relative Block Number (RBN).
-     * @return None.
      * @pre The file is open.
      * @post The file pointer is moved to the start of the block at the given RBN.
     */
-    void moveToBlock(int rbn);
+    void moveToBlock(int relativeBlockNumber);
 
 };
 

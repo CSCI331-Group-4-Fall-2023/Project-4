@@ -69,8 +69,12 @@ int main(int argc, char* argv[]) {
     // Loop until a valid file name is provided by the user
     while (true) {
         // Prompt the user for a file name
+        
         std::cout << "Enter the file name to open: ";
         std::cin >> fileName;
+        
+        //fileName = "blockedcodes.txt"; // TEST
+        //fileType = 'B'; // TEST
 
         // Attempt to open the file
         file.open(fileName);
@@ -84,15 +88,17 @@ int main(int argc, char* argv[]) {
         }
     }
 
-
+    
     if (fileName.find(".csv") != std::string::npos)
     {
         fileType = 'C';
     }
-    //else
-    //{
-    //    // TODO read from file metadata to determine whether it is length-indicated or blocked
-    //}
+    else
+    {
+        // TODO read from file metadata to determine whether it is length-indicated or blocked instead of using this prompt
+        std::cout << "Enter the file type (L for length-indicated, B for blocked): ";
+        std::cin >> fileType;
+    }
     
 
     // Create a ZipCodeBuffer using the file name of the CSV containing the records
@@ -117,7 +123,6 @@ int main(int argc, char* argv[]) {
             ZipCodeRecord record = buffer.readNextRecord();
             if (record.zipCode == "") {
                 // Exit the loop if the terminal string "" was returned from the buffer
-                
                 break;
             }
 

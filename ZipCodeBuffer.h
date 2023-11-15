@@ -5,7 +5,7 @@
  * @brief Class to parse ZIP code records in a file.
  * @author Kent Biernath
  * @author Emma Hoffmann, Emily Yang
- * @date 2023-11-11
+ * @date 2023-11-14
  * @version 3.0
  */
 // ----------------------------------------------------------------------------
@@ -28,7 +28,7 @@
  * \n
  * \n  Assumptions:
  * \n  -- The file is in the same directory as the program.
- * \n  -- The file records always contain exactly six fields.
+ * \n  -- The records always contain exactly six fields.
  * \n  -- The file has column headers on the first line.
  */
 // ----------------------------------------------------------------------------
@@ -61,7 +61,7 @@ private:
     std::ifstream &file;
     char fileType;
     vector<string> blockRecords; // Stores the current block of records if using a block file format
-    int blockRecordsIndex = -1; // Default to index below 0 so it retrieves the first block on first check
+    int blockRecordsIndex = -1; // Default to index 0 so it retrieves the first block on first check
     BlockBuffer blockBuffer; // Stores the block metadata if using a block file format
 
 public:
@@ -76,7 +76,7 @@ public:
      *              describing the length of the record.
      * \n  -- 'B' = Blocked length-indicated records.
      */
-    ZipCodeBuffer(std::ifstream &file, char fileType);
+    ZipCodeBuffer(std::ifstream &file, char fileType = 'L');
 
     //** @brief Destructor to close the file when done. */
     //~ZipCodeBuffer();
@@ -123,7 +123,7 @@ public:
     std::ifstream& setCurrentPosition(std::streampos);
 
     // Give BlockBuffer access to private member functions and variables.
-    friend class BlockBuffer;
+    //friend class BlockBuffer;
 };
 
 #endif // ZIPCODEBUFFER_H

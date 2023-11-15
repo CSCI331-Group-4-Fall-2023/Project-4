@@ -11,7 +11,7 @@
 #include "BlockBuffer.h"
 
 /// @brief Constructor that accepts the filename.
-ZipCodeBuffer::ZipCodeBuffer(std::ifstream &file, char fileType = 'L') : file(file), fileType(std::toupper(fileType)), blockBuffer(BlockBuffer(file)) {
+ZipCodeBuffer::ZipCodeBuffer(std::ifstream &file, char fileType) : file(file), fileType(std::toupper(fileType)), blockBuffer(BlockBuffer(file)) {
     if (this->fileType == 'C') {
         // If CSV, skip the header line.
         std::string line;
@@ -74,28 +74,40 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
     ZipCodeRecord record;
     std::string recordString;
 
-    /*
+    if (file.eof())
+    {
+        // End of file reached. Return terminal character
+        record.zipCode = "";
+        return record;
+    }
+    
+    
     if (fileType == 'B')
     {
-        if (blockRecordsIndex > blockRecords.size())
+        if (blockRecordsIndex >= blockRecords.size() || blockRecordsIndex == -1)
         {
             // Reached the end of the block, so retrieve the next one
             blockRecords = blockBuffer.readNextBlock();
-            record = parseRecord(blockRecords[0]);
-            blockRecordsIndex = 1; // skip 0 because it reads it immediately
-
-            // TODO needs block buffer to retrieve the next block and store the vector in blockRecords
+            if (blockRecords.size() > 0)
+            {
+                recordString = blockRecords[0]; // Retrieve the first record in the block
+                blockRecordsIndex = 1;          // Skip 0 because it reads it immediately
+            }
+            else
+            {
+                // Did not read a valid block (likely due to the end of file), so return terminal character
+                record.zipCode = "";
+                return record;
+            }
         }
-        else if (blockRecordsIndex < blockRecords.size()) // TODO logic could likely be changed
+        else
         {
-            record = parseRecord(blockRecords[blockRecordsIndex]);
+            recordString = blockRecords[blockRecordsIndex++];
         }
         
         
     }
-    */
-    
-    if (fileType == 'C')
+    else if (fileType == 'C')
     {
         // If CSV, retrieve the next line in the file as the record to parse
         getline(file, recordString);
@@ -110,14 +122,8 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
         file.read(&recordString[0], numCharactersToRead);
     }
 
-    if (!file.eof()) {
-        // If not the end of the file, read the fields in the line into the record object
-        record = parseRecord(recordString);
-    }
-    else {
-        // End of file reached. Return terminal character
-        record.zipCode = "";
-    }
+    // If not the end of the file, read the fields in the line into the record object
+    record = parseRecord(recordString);
     
     return record;
 };
