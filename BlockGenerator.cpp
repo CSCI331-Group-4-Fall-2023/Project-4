@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
             isLastBlock = readFile.eof();
 
             // Metadata calculation
-            string metadata = to_string(currentBlock) + "," + to_string(numRecords) + "," + (currentBlock == 1 ? "-1" : to_string(currentBlock - 1)) + "," + (isLastBlock ? "-1" : to_string(currentBlock + 1)) + ",";
+            string metadata = to_string(currentBlock) + "," + to_string(numRecords) + "," + (currentBlock == 0 ? "-1" : to_string(currentBlock - 1)) + "," + (isLastBlock ? "-1" : to_string(currentBlock + 1)) + ",";
             int metadataLength = metadata.length() + 3; // Including LI and comma and ending comma
 
             // Write metadata and records
