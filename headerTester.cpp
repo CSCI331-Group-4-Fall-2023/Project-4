@@ -44,7 +44,7 @@ int main(){
     // Read the header from a file
     HeaderBuffer headerBuffer2("us_postal_codes.txt");
     headerBuffer2.readHeader();
-    headerBuffer2.writeHeaderTest("testread.txt");
+    headerBuffer2.writeHeaderToFile("testread.txt");
     return 0;
 
 }
