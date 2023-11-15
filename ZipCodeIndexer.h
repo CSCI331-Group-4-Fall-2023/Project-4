@@ -64,7 +64,7 @@ public:
      * @param fileType The type of the file, [C]SV or [L]ength-indicated
      * @param idxFileName The name of the index file to save/load as a string.
      */
-    ZipCodeIndexer(const std::string& fileName, char fileType, const std::string& idxFileName);
+    ZipCodeIndexer(std::ifstream &file, char fileType, const std::string& idxFileName);
 
     /**
      * @brief Method to create an index by reading the file and storing ZIP codes and their positions.

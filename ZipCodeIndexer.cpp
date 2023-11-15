@@ -9,8 +9,8 @@
 // and sets the index file name
 /// @param fileName The name of the  file to index as a string.
 /// @param idxFileName The name of the index file to save/load as a string.
-ZipCodeIndexer::ZipCodeIndexer(const std::string& fileName, char fileType, const std::string& idxFileName)
-    : buffer(fileName, fileType), indexFileName(idxFileName) {}
+ZipCodeIndexer::ZipCodeIndexer(std::ifstream &file, char fileType, const std::string& idxFileName)
+    : buffer(file, fileType), indexFileName(idxFileName) {}
 
 /// @brief Create an index of ZIP codes to their positions in the file.
 // This function creates an index of ZIP codes to their positions in the file

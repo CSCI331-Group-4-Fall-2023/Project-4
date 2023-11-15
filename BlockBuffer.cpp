@@ -1,38 +1,36 @@
-// ----------------------------------------------------------------------------
-/**
- * @file BlockBuffer.cpp
- * @class BlockBuffer
- * @brief This class unpacks a record from a block into a record buffer
- * @author Andrew Clayton
- * @date 11/9/2023
- * @version 1.0
- */
- // ----------------------------------------------------------------------------
- /**
-  * @details
-  *
-  * The block buffer unpacks a record from a block into a record buffer.
-  * So this will break down a block into indiviual records (as an array of strings)
-  */
-  // ----------------------------------------------------------------------------
-
-
+/// @file BlockBuffer.cpp
+/// @class BlockBuffer
+/// See BlockBuffer.h for full documentation.
 
 #include <iostream>
 #include <fstream> // for file operations
 #include <string>
 #include <vector>
 #include "BlockBuffer.h"
+//#include "ZipCodeBuffer.h"
+#include <sstream>
 
 using namespace std;
 
-vector<string> BlockBuffer::createRecords() {
+vector<string> BlockBuffer::unpackBlockRecords() {
     // This will convert a block to a vector of records
     size_t idx = 0;
     vector<string> records;
-    // int currentRecordLength;
 
+    for (size_t i = 0; i < getNumRecordsInBlock(); i++)
+    {
+        // If length-indicated, reads the length and retrieves that many characters for the record
+        std::string recordString;
+        int numCharactersToRead = 0;
+        file >> numCharactersToRead;   // Read the length indicator, the first field in each record
+        file.ignore(1);                // Skip the comma after the length field
+        recordString.resize(numCharactersToRead);
+        file.read(&recordString[0], numCharactersToRead);
+        records.push_back(recordString);
+    }
 
+    // This code was not working for me, but it may have features that should still be implemented
+    /*
     while (idx < block.length()) {
         // Reached filler characters of block (end of block)
         if (block[idx] == '~') {
@@ -60,7 +58,77 @@ vector<string> BlockBuffer::createRecords() {
         }
 
     }
-
-    return records;
+    */
     
+    return records;
+}
+
+
+
+/// @brief Reads the block metadata for the current block.
+void BlockBuffer::readBlockMetadata() {
+    int metadataRecordLength = -1;
+    int newRelativeBlockNumber = -1;
+    int newNumRecordsInBlock = -1;
+    int newPrevRBN = -1;
+    int newNextRBN = -1;
+    
+    file >> metadataRecordLength;
+    file.ignore(1); // Ignore the commas separating the fields
+    file >> newRelativeBlockNumber;
+    file.ignore(1);
+    file >> newNumRecordsInBlock;
+    file.ignore(1);
+    file >> newPrevRBN;
+    file.ignore(1);
+    file >> newNextRBN;
+    file.ignore(1); // Skip the comma after the last metadata field
+
+    // TODO throw exception if any of these reads failed or the values are invalid
+
+    currentRBN = newRelativeBlockNumber;
+    numRecordsInBlock = newNumRecordsInBlock;
+    prevRBN = newPrevRBN;
+    nextRBN = newNextRBN;
+}
+
+
+
+/// @brief Calculates the address of a Relative Block Number (RBN) within the file.
+int BlockBuffer::calculateBlockAddress(int relativeBlockNumber) {
+    // TODO change to RBN starting at 1 instead of 0 if needed
+    return headerSize + relativeBlockNumber*blockSize;
+}
+
+
+
+/// @brief Moves the file pointer to the address of the block at the given Relative Block Number (RBN).
+void BlockBuffer::moveToBlock(int relativeBlockNumber) {
+    int address = calculateBlockAddress(relativeBlockNumber);
+    file.seekg(address);
+}
+
+
+
+/// @brief Reads the next block and returns it as a vector of records in string form.
+vector<string> BlockBuffer::readNextBlock() {
+    vector<string> recordStrings;
+    std::string line;
+
+
+    // If the next RBN is -1, the end of the chain has been reached.
+    if (nextRBN == -1)
+    {
+        currentRBN = -1;
+        file.ignore(1); // Ignore a newline at the end of the file, if any
+        return recordStrings;
+    }
+    
+    moveToBlock(nextRBN);               // Move to the next block
+    readBlockMetadata();                // Read the metadata for the block
+
+    recordStrings = unpackBlockRecords(); // Split the block into record strings
+    //std::getline(file, line);   // Read the remainder of the line to get to the next physical block
+
+    return recordStrings;
 }

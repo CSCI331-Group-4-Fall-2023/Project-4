@@ -62,21 +62,25 @@
 
 int main(int argc, char* argv[]) {
 
+    std::ifstream file;
     std::string fileName;
     char fileType = 'L'; // Default to length-indicated file type
 
     // Loop until a valid file name is provided by the user
     while (true) {
         // Prompt the user for a file name
+        
         std::cout << "Enter the file name to open: ";
         std::cin >> fileName;
+        
+        //fileName = "blockedcodes.txt"; // TEST
+        //fileType = 'B'; // TEST
 
         // Attempt to open the file
-        std::ifstream file(fileName);
+        file.open(fileName);
 
         if (file.is_open()) {
             std::cout << "File successfully opened." << std::endl;
-            file.close(); // Check for a valid file succeeded
             break;  // Exit the loop when a valid file is provided
         }
         else {
@@ -84,18 +88,22 @@ int main(int argc, char* argv[]) {
         }
     }
 
-
+    
     if (fileName.find(".csv") != std::string::npos)
     {
         fileType = 'C';
     }
+    else
+    {
+        // TODO read from file metadata to determine whether it is length-indicated or blocked instead of using this prompt
+        std::cout << "Enter the file type (L for length-indicated, B for blocked): ";
+        std::cin >> fileType;
+    }
+    
 
     // Create a ZipCodeBuffer using the file name of the CSV containing the records
-    ZipCodeBuffer buffer(fileName, fileType);
+    ZipCodeBuffer buffer(file, fileType);
     ZipCodeRecord record;
-
-
-
 
 
     // If no arguments, display the table
@@ -105,7 +113,6 @@ int main(int argc, char* argv[]) {
         std::set<std::string> stateCode;
         std::map<std::string, std::vector<double>> stateCodeToCoordinatesMap;
         std::map<std::string, std::vector<std::string>> stateCodeToZipCodesMap;
-
 
 
 
@@ -196,7 +203,8 @@ int main(int argc, char* argv[]) {
 
         // Generate an index (and delete the variable)
         {
-            ZipCodeIndexer index(fileName, fileType, fileName + "_index.txt");
+            std::ifstream searchFile(fileName);
+            ZipCodeIndexer index(searchFile, fileType, fileName + "_index.txt");
             index.createIndex();
             index.writeIndexToFile();
         }
@@ -231,5 +239,6 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    file.close();
     return 0;
 }
