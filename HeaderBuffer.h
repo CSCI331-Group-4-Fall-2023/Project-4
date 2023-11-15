@@ -66,10 +66,13 @@ public:
     HeaderBuffer(const std::string& filename);
 
     
-    /// @brief Write the header data to a file.
+    /// @brief Write the header data to a file held the by object.
     /// @pre The file must be successfully opened for writing.
     void writeHeader();
-    void writeHeaderTest(const std::string& filename);
+
+    /// @brief Write the header data to a file passed to the object.
+    /// @pre The file must be successfully opened for writing.
+    void writeHeaderToFile(const std::string& filename);
 
     /// @brief Read header data from a file.
     /// @pre The file must be successfully opened for reading.
