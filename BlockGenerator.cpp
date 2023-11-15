@@ -4,7 +4,7 @@
  * @brief File for generating a blocked sequence set
  * @author Andrew Clayton
  * @date 11/13/2023
- * @version 1.2
+ * @version 1.3
  */
  // ----------------------------------------------------------------------------
  /**
@@ -26,12 +26,23 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "HeaderBuffer.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
     const int BLOCK_SIZE = 510;
     const int BLOCK_CAPACITY = 0.75 * BLOCK_SIZE; // 75% of the block size
+
+
+    // We need to first read and write the header of the file
+    HeaderBuffer header = HeaderBuffer("us_postal_codes.txt");
+    header.readHeader();
+    header.writeHeaderTest("blocked_postalcodes.txt");
+
+    // Now we can proceed with the blocked data generation, but we have to make sure the file opens up where we left off
+
+
 
     // Check if the correct number of command line arguments were given
     if (argc < 2) {
@@ -53,6 +64,8 @@ int main(int argc, char* argv[]) {
         cerr << "Error: Could not open file us_postal_codes.txt for reading.\n";
         return 1;
     }
+
+    // We need to have the file open to the actual content, past the metadata. 
 
     // Now we go through the file and convert the length-indicated data to blocked data, ensuring that
     // records stay complete within the BLOCK_CAPACITY
