@@ -60,7 +60,7 @@
         file.close();
     }
     //version of writeHeader that prints to a file of choice rather than the file held by the object
-    void HeaderBuffer::writeHeaderTest(const std::string& filename) {
+    void HeaderBuffer::writeHeaderToFile(const std::string& filename) {
         std::ofstream file(filename);
 
         if (!file.is_open()) {

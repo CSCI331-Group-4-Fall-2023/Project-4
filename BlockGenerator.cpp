@@ -4,7 +4,7 @@
  * @brief File for generating a blocked sequence set
  * @author Andrew Clayton
  * @date 11/13/2023
- * @version 1.2
+ * @version 1.4
  */
  // ----------------------------------------------------------------------------
  /**
@@ -26,12 +26,23 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include "HeaderBuffer.h"
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
     const int BLOCK_SIZE = 510;
     const int BLOCK_CAPACITY = 0.75 * BLOCK_SIZE; // 75% of the block size
+
+
+    // We need to first read and write the header of the file
+    HeaderBuffer header = HeaderBuffer("us_postal_codes.txt");
+    header.readHeader();
+    header.writeHeaderToFile("blocked_postal_codes.txt");
+
+    // Now we can proceed with the blocked data generation, but we have to make sure the file opens up where we left off
+
+
 
     // Check if the correct number of command line arguments were given
     if (argc < 2) {
@@ -41,18 +52,22 @@ int main(int argc, char* argv[]) {
 
     // File to write data out to
     string blockedDataFile = argv[1]; // Assumes the first command line argument is the file name
-    ofstream writeFile(blockedDataFile + ".txt");
+    ofstream writeFile;
+    // we need to append to the file, not overwrite it
+    writeFile.open(blockedDataFile + ".txt", ios::app);
     if (!writeFile.is_open()) {
         cerr << "Error: Could not open file " << blockedDataFile << " for writing.\n";
         return 1;
-    }
+    }  
     
     // File to read information from
-    ifstream readFile("us_postal_codes.txt");
+    ifstream readFile("uspostal_codes.txt");
     if (!readFile.is_open()) {
-        cerr << "Error: Could not open file us_postal_codes.txt for reading.\n";
+        cerr << "Error: Could not open file uspostal_codes.txt for reading.\n";
         return 1;
     }
+
+    // We need to have the file open to the actual content, past the metadata. 
 
     // Now we go through the file and convert the length-indicated data to blocked data, ensuring that
     // records stay complete within the BLOCK_CAPACITY
@@ -82,7 +97,7 @@ int main(int argc, char* argv[]) {
             isLastBlock = readFile.eof();
 
             // Metadata calculation
-            string metadata = to_string(currentBlock) + "," + to_string(numRecords) + "," + (currentBlock == 1 ? "-1" : to_string(currentBlock - 1)) + "," + (isLastBlock ? "-1" : to_string(currentBlock + 1)) + ",";
+            string metadata = to_string(currentBlock) + "," + to_string(numRecords) + "," + (currentBlock == 0 ? "-1" : to_string(currentBlock - 1)) + "," + (isLastBlock ? "-1" : to_string(currentBlock + 1)) + ",";
             int metadataLength = metadata.length() + 3; // Including LI and comma and ending comma
 
             // Write metadata and records
