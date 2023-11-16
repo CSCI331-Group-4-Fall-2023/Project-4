@@ -62,9 +62,10 @@ private:
     char fileType;
     vector<string> blockRecords; // Stores the current block of records if using a block file format
     int blockRecordsIndex = -1; // Default to index 0 so it retrieves the first block on first check
-    BlockBuffer blockBuffer; // Stores the block metadata if using a block file format
 
 public:
+    BlockBuffer blockBuffer; // Stores the block metadata if using a block file format
+
     /**
      * @brief Constructor that accepts the filename.
      * @pre The file has one column header row to skip.

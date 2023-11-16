@@ -47,7 +47,6 @@ private:
     int blockSize = 512; // TODO replace hardcoded 512 bytes with reading from the header record buffer
     int headerSize = 53; // TODO replace hardcoded bytes with reading from header record buffer
 
-
 public:
     /**
      * @brief Construct a new Block Buffer object.
@@ -74,7 +73,6 @@ public:
     */
     void readBlockMetadata();
 
-
     // Metadata getters
     int getCurrentRBN() const { return currentRBN; }
     int getPrevRBN() const { return prevRBN; }
@@ -83,10 +81,28 @@ public:
 
 
     /**
-     * @brief Reads the next block and returns it as a vector of records in string form.
+     * @brief Reads the block at the given Relative Block Number (RBN) and returns it as a vector of records in string form.
+     * @return A vector of strings where each string represents a record within the block.
+     * \n      The length indication field for each record is read but not returned in the string.
+     * @pre: The file is open and in a blocked length-indicated file format.
+     * @post: The block is broken down into records and the file pointer is after the records in the block.
+     */
+    vector<string> readBlock(int relativeBlockNumber);
+
+    /**
+     * @brief Reads the current block after the file pointer and returns it as a vector of records in string form.
      * @return A vector of strings where each string represents a record within the block.
      * \n      The length indication field for each record is read but not returned in the string.
      * @pre: The file pointer is at the start of the block.
+     * @post: The block is broken down into records and the file pointer is after the records in the block.
+     */
+    vector<string> readCurrentBlock();
+
+    /**
+     * @brief Moves to and reads the next block and returns it as a vector of records in string form.
+     * @return A vector of strings where each string represents a record within the block.
+     * \n      The length indication field for each record is read but not returned in the string.
+     * @pre: The file is open and in a blocked length-indicated file format.
      * @post: The block is broken down into records and the file pointer is after the records in the block.
      */
     vector<string> readNextBlock();
