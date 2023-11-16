@@ -96,7 +96,6 @@ void BlockBuffer::readBlockMetadata() {
 
 /// @brief Calculates the address of a Relative Block Number (RBN) within the file.
 int BlockBuffer::calculateBlockAddress(int relativeBlockNumber) {
-    // TODO change to RBN starting at 1 instead of 0 if needed
     return headerSize + relativeBlockNumber*blockSize;
 }
 
@@ -110,25 +109,31 @@ void BlockBuffer::moveToBlock(int relativeBlockNumber) {
 
 
 
-/// @brief Reads the next block and returns it as a vector of records in string form.
-vector<string> BlockBuffer::readNextBlock() {
+/// @brief Moves to and reads the next block and returns it as a vector of records in string form.
+vector<string> BlockBuffer::readBlock(int relativeBlockNumber) {
     vector<string> recordStrings;
     std::string line;
 
-
-    // If the next RBN is -1, the end of the chain has been reached.
-    if (nextRBN == -1)
+    // If the RBN is -1, the end of the chain has been reached.
+    if (relativeBlockNumber == -1)
     {
         currentRBN = -1;
-        file.ignore(1); // Ignore a newline at the end of the file, if any
         return recordStrings;
     }
     
     moveToBlock(nextRBN);               // Move to the next block
+    return readCurrentBlock();          // Read the metadata and the records
+}
+
+
+
+/// @brief Reads the current block and returns it as a vector of records in string form.
+vector<string> BlockBuffer::readCurrentBlock() {
     readBlockMetadata();                // Read the metadata for the block
+    return unpackBlockRecords();        // Read the length-indicated records into strings and return them
+}
 
-    recordStrings = unpackBlockRecords(); // Split the block into record strings
-    //std::getline(file, line);   // Read the remainder of the line to get to the next physical block
 
-    return recordStrings;
+vector<string> BlockBuffer::readNextBlock() {
+    return readBlock(nextRBN);
 }
