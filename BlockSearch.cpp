@@ -69,20 +69,26 @@ string BlockSearch::searchForRecord(int target) {
             // We have found the block that contains the record we are looking for
             // now we need to actually access the block itself, which we should be able to do with BlockBuffer
 
-            ifstream dataFile("blocked_postal_codes.txt");
+            ifstream dataFile("blockedcodes.txt");
             BlockBuffer blockbuffer(dataFile);
-            blockbuffer.moveToBlock(rbn);
-
-            // cout << "Getting past blockbuffer stuff\n";
 
             // We break down all the block into a vector of records
-            vector<string> records = blockbuffer.unpackBlockRecords();
+            // cout << "RBN: " << rbn << "\n";
+
+            cout << "Block buffer reading block " << rbn << "\n";
+            vector<string> records = blockbuffer.readBlock(rbn);
             // cout << "Records vector created, of size " << records.size() << "\n";
+            // cout << records[1] << "\n";
             // cout << "Block is: " << blockbuffer.getBlock() << "\n";
             // cout << rbn << " Block has " << blockbuffer.getNumRecordsInBlock() << " records\n";
 
+            cout << "These are the records for block " << rbn << "\n";
             for (string record : records) { // Check if each record is the target record
-                int zipcode = findZipcode(record);
+                cout << record << "\n";
+                int commaIdx = record.find(',');
+                int zipcode = stoi(record.substr(0, commaIdx));
+
+                // int zipcode = findZipcode(record);
                 // cout << "Zipcode for record " << record << " is " << zipcode << "\n";
                 if (zipcode == target) {
                     return record;
