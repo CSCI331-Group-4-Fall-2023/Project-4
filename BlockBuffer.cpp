@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 #include "BlockBuffer.h"
-//#include "ZipCodeBuffer.h"
 #include <sstream>
 
 using namespace std;
@@ -109,7 +108,7 @@ void BlockBuffer::moveToBlock(int relativeBlockNumber) {
 
 
 
-/// @brief Moves to and reads the next block and returns it as a vector of records in string form.
+/// @brief Reads the block at the given Relative Block Number (RBN) and returns it as a vector of records in string form.
 vector<string> BlockBuffer::readBlock(int relativeBlockNumber) {
     vector<string> recordStrings;
     std::string line;
@@ -121,7 +120,7 @@ vector<string> BlockBuffer::readBlock(int relativeBlockNumber) {
         return recordStrings;
     }
     
-    moveToBlock(nextRBN);               // Move to the next block
+    moveToBlock(relativeBlockNumber);               // Move to the next block
     return readCurrentBlock();          // Read the metadata and the records
 }
 
