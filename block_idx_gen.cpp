@@ -4,7 +4,7 @@
  * @brief This class creates an index file for a blocked data file. 
  * @author Andrew Clayton
  * @date 11/13/2023
- * @version 1.3
+ * @version 1.4
  */
 // ----------------------------------------------------------------------------
 /**
@@ -50,10 +50,18 @@ int main() {
         return 1;
     }
     
-    ifstream readFile("blocked_postalcodes.txt");
+    ifstream readFile("blocked_postal_codes.txt");
     if (!readFile.is_open()) {
         cerr << "Error: Could not open file 'blocked_postalcodes.txt' for reading.\n";
         return 1;
+    }
+
+    // We need to skip past the metadata, up to the "Data: line"
+    string line;
+    while (getline(readFile, line)) {
+        if (line == "Data:") {
+            break;
+        }
     }
 
     int blockNumber = 0;
@@ -65,6 +73,11 @@ int main() {
         int start = stoi(currentBlock.substr(0, 2));
         size_t endOfBlock = currentBlock.find('~'); // Assuming '~' is the padding character
 
+        maxZipcode = 0;
+
+        // Put all the records into a vector
+        vector<string> records;
+
         while (start < endOfBlock) {
             size_t recordLength;
             try {
@@ -73,20 +86,30 @@ int main() {
                 cerr << "Invalid argument: " << ia.what() << " for record length at block " << blockNumber << "\n";
                 return 1;
             }
-
+            
+            // Traversing record by record
             string currentRecord = currentBlock.substr(start, recordLength);
-            int currentZipcode = findZipcode(currentRecord);
+            records.push_back(currentRecord);
+            // Checking the zipcode of each individual record
 
-            if (currentZipcode > maxZipcode) {
-                maxZipcode = currentZipcode;
-            }
+
             start += recordLength;
         }
+
+        maxZipcode = findZipcode(records.back());
+
+        cout << "Current block: " << currentBlock << "\n";
+        cout << "All the records in the block\n";
+        for (auto record : records) {
+            cout << record << "\n";
+        }
+        cout << "Max zipcode: " << maxZipcode << "\n\n";
+
 
         writeFile << blockNumber << "," << maxZipcode << "\n";
 
         blockNumber++;
-        maxZipcode = 0;
+        // maxZipcode = 0;
     }
 
     readFile.close();

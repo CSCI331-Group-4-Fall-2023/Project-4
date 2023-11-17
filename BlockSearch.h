@@ -36,7 +36,7 @@ public:
      * @pre: none
      * @post: A new BlockSearch object is created
     */
-    BlockSearch();
+    BlockSearch() { }
 
     /**
      * @brief Constructor that takes in a blocked index file
@@ -54,7 +54,7 @@ public:
      * @post: The record is either found or not found
      * @return: The record if it is found, or a -1 if it is not found
     */
-    string searchForRecord(string target);
+    string searchForRecord(int target);
 
     /**
      * @brief Displays the record to the console
@@ -66,5 +66,5 @@ public:
 
 };
 
-// #include "BlockSearch.cpp"
+#include "BlockSearch.cpp"
 #endif

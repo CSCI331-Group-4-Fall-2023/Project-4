@@ -1,13 +1,15 @@
 /// @file BlockSearch.cpp
 /// @class BlockSearc
-/// @brief Implementation of the BlockSearch class for searchign for records in the blocked index file.
+/// @brief Implementation of the BlockSearch class for searching for records in the blocked index file.
 
 
 #include <string>
 #include <fstream>
 #include <iostream>
-#include "BlockSearch.h"
+// #include "BlockSearch.h"
 #include <vector>
+#include "BlockBuffer.h"
+#include "BlockBuffer.cpp"
 
 // Default constructor
 BlockSearch::BlockSearch(string idxFile) {
@@ -26,28 +28,8 @@ int findZipcode(const string& record) {
     return stoi(record.substr(firstComma + 1, secondComma - firstComma - 1));
 }
 
-vector<string> blockToRecords(const string& block) {
-    vector<string> records;
-    size_t start = 0;
-    int recordLength;
-    while (start < block.size()) {
-        try {
-            recordLength = stoi(block.substr(start, 2));
-        } catch (invalid_argument& e) {
-            cerr << "Error parsing record length: " << e.what() << endl;
-            return records;
-        }
-
-        // int recordLength = stoi(block.substr(start, 2));
-        cout << recordLength;
-        records.push_back(block.substr(start, recordLength));
-        start += recordLength + 3; // +3 for "LI,"
-    }
-    return records;
-}
-
 // Searches for a record in the blocked index file by key (zipcode)
-string BlockSearch::searchForRecord(string target) {
+string BlockSearch::searchForRecord(int target) {
     // Open the index file
     ifstream readFile(indexFile);
 
@@ -63,50 +45,68 @@ string BlockSearch::searchForRecord(string target) {
 
     // Iterate through each line of the file
     while (getline(readFile, line)) {
-        line.find(',');
-        string greatestKeyInBlock = line.substr(line.find(','));
+        int commaIdx = line.find(',');
+        int rbn = 0;
+        try {
+            rbn = stoi(line.substr(0, commaIdx));
+        } catch (invalid_argument& e) {
+            cerr << "Error parsing RBN: " << e.what() << endl;
+            // return "-1";
+        }
+
+        int greatestKeyInBlock;
+        try {
+            greatestKeyInBlock = stoi(line.substr(commaIdx+1));
+        } catch (invalid_argument& e) {
+            cerr << "Error parsing greatest key in block: " << e.what() << endl;
+            // return "-1";
+        }
+        
+        // cout << "Comparing " << target << " to " << greatestKeyInBlock << " at RBN " << rbn << "\n";
         if (target < greatestKeyInBlock) {
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-        /////////////// ONCE WE HAVE OUR BLOCK, WE NEED TO USE THE INDEX FILE TO OPEN THE BLOCK IN THE POSTAL CODES.
-        /////////////// PROBABLY NEED TO USE BLOCK BUFFER TO LOCATE THE SPECIFIC BLOCK BY RBN AND OPEN IT UP
-
-
-            /////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-            ///////////////////////////////////////////////////////////////////////////
+            cout << "If this record exists, it will be contained in block " << rbn << "\n";
+            // cout << "Condition entered!\n";
             // We have found the block that contains the record we are looking for
+            // now we need to actually access the block itself, which we should be able to do with BlockBuffer
 
-            // First, we skip past the metadata
-            int metadataLength = stoi(line.substr(0, 2));
-            string blockContent = line.substr(metadataLength);
+            ifstream dataFile("blocked_postal_codes.txt");
+            BlockBuffer blockbuffer(dataFile);
+            blockbuffer.moveToBlock(rbn);
+
+            // cout << "Getting past blockbuffer stuff\n";
 
             // We break down all the block into a vector of records
-            vector<string> records = blockToRecords(blockContent);
+            vector<string> records = blockbuffer.unpackBlockRecords();
+            // cout << "Records vector created, of size " << records.size() << "\n";
+            // cout << "Block is: " << blockbuffer.getBlock() << "\n";
+            // cout << rbn << " Block has " << blockbuffer.getNumRecordsInBlock() << " records\n";
 
             for (string record : records) { // Check if each record is the target record
                 int zipcode = findZipcode(record);
-                if (zipcode == stoi(target)) {
+                // cout << "Zipcode for record " << record << " is " << zipcode << "\n";
+                if (zipcode == target) {
                     return record;
                 }
             }
-            
-            // If we get here, we have not found the record
-            return "-1";
-        } // else target >= greatestKeyInBlock.. so we just want to keep going
-
-        // We could not find the block that contains the record we are looking for
-        return "-1";          
-        
+            break; // not  found in this block, and next blocks have greater keys
+        }    
     }
+    // We could not find the block that contains the record we are looking for
+    return "-1";   
+}
 
     // void BlockSearch::displayRecord(string record) {    }
 void BlockSearch::displayRecord(string record) {
-    // The format of a record is: 
-}
-
+    // The format of a record is: LI,zipcode,town,state,county,latitude,longitude
+    // We want to print out each label (except length indicator) and the corresponding value
+    // We can use the comma as a delimiter to split the string into a vector of strings
+    vector<string> fields;
+    size_t start = 0;
+    size_t end = record.find(',');
+    while (end != string::npos) {
+        fields.push_back(record.substr(start, end - start));
+        start = end + 1;
+        end = record.find(',', start);
+    }
 
 }
