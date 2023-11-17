@@ -48,7 +48,7 @@ public:
 
 
     /**
-     * @brief Searches for a record in the blocked index file by key (zipcode)
+     * @brief Searches for a record in the blocked index file by key (zipcode).
      * @param target: The zipcode to search for
      * @pre: A blocked index file exists
      * @post: The record is either found or not found

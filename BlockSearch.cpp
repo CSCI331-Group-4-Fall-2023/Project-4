@@ -90,16 +90,24 @@ string BlockSearch::searchForRecord(int target) {
 
     // void BlockSearch::displayRecord(string record) {    }
 void BlockSearch::displayRecord(string record) {
-    // The format of a record is: LI,zipcode,town,state,county,latitude,longitude
-    // We want to print out each label (except length indicator) and the corresponding value
-    // We can use the comma as a delimiter to split the string into a vector of strings
+    // The format of a record is: zipcode,town,state,county,latitude,longitude
     vector<string> fields;
-    size_t start = 0;
-    size_t end = record.find(',');
-    while (end != string::npos) {
-        fields.push_back(record.substr(start, end - start));
-        start = end + 1;
-        end = record.find(',', start);
+    stringstream ss(record);
+    string field;
+
+    while (getline(ss, field, ',')) {
+        fields.push_back(field);
+    }
+
+    if (fields.size() == 6) { // Ensure there are exactly 6 fields: zipcode, town, state, county, latitude, longitude
+        cout << "Zipcode: " << fields[0] << endl;
+        cout << "Town: " << fields[1] << endl;
+        cout << "State: " << fields[2] << endl;
+        cout << "County: " << fields[3] << endl;
+        cout << "Latitude: " << fields[4] << endl;
+        cout << "Longitude: " << fields[5] << "\n\n";
+    } else {
+        cerr << "Zipcode not found." << endl;
     }
 
 }
