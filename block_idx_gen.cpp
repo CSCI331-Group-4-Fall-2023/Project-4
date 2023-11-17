@@ -98,14 +98,6 @@ int main() {
 
         maxZipcode = findZipcode(records.back());
 
-        cout << "Current block: " << currentBlock << "\n";
-        cout << "All the records in the block\n";
-        for (auto record : records) {
-            cout << record << "\n";
-        }
-        cout << "Max zipcode: " << maxZipcode << "\n\n";
-
-
         writeFile << blockNumber << "," << maxZipcode << "\n";
 
         blockNumber++;
