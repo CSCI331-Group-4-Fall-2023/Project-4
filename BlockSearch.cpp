@@ -1,6 +1,7 @@
 /// @file BlockSearch.cpp
-/// @class BlockSearc
+/// @class BlockSearch
 /// @brief Implementation of the BlockSearch class for searching for records in the blocked index file.
+/// See BlockSearch.h for full documentation.
 
 #include <string>
 #include <fstream>
@@ -8,9 +9,7 @@
 #include "BlockSearch.h"
 #include <vector>
 #include "BlockBuffer.h"
-// #include "BlockBuffer.cpp"
 #include "HeaderBuffer.h"
-// #include "HeaderBuffer.cpp"
 
 // Default constructor
 BlockSearch::BlockSearch(string idxFile) {
@@ -33,16 +32,9 @@ int findZipcode(const string& record) {
 string BlockSearch::searchForRecord(int target) {
     // Open the index file
     ifstream readFile(indexFile);
-
-    // We have to skip past the metadata, up to the "Data: line" -- index file no longer includes this metadata
     string line;
-    /*while (getline(readFile, line)) {
-        if (line == "Data:") {
-            break;
-        }
-    }*/
 
-    // Now we are to the content of the file - we will read through the file until we find target < greatestKeyInBlock
+    // Read through the index file until we find target < greatestKeyInBlock
 
     // Iterate through each line of the file
     while (getline(readFile, line)) {
