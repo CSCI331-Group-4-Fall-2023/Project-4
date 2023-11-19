@@ -43,6 +43,7 @@
 #include <vector>
 #include <sstream>
 #include "BlockBuffer.h"
+#include "HeaderBuffer.h"
 
 /// @brief Structure to hold a ZIP Code record.
 struct ZipCodeRecord {
@@ -65,6 +66,8 @@ private:
 
 public:
     BlockBuffer blockBuffer; // Stores the block metadata if using a block file format
+    HeaderBuffer headerBuffer = HeaderBuffer("us_postal_codes.txt"); // Stores the header buffer
+    // TODO once default constructor is added, make it use generic constructor instead
 
     /**
      * @brief Constructor that accepts the filename.
@@ -72,12 +75,26 @@ public:
      * @post The file is opened and the header row is skipped.
      * @param fileName The name of the file to open.
      * @param fileType The type of the file. Case insensitive, stored in uppercase.
+     * @param headerBuffer A HeaderBuffer object for the file.
      * \n  -- 'C' = CSV, comma-separated values.
      * \n  -- 'L' = Length-indicated file structure format with the first field
      *              describing the length of the record.
      * \n  -- 'B' = Blocked length-indicated records.
      */
-    ZipCodeBuffer(std::ifstream &file, char fileType = 'L');
+    ZipCodeBuffer(std::ifstream &file, char fileType, HeaderBuffer headerBuffer);
+
+
+
+
+
+    //ZipCodeBuffer(std::ifstream &file, char fileType) : ZipCodeBuffer(file, fileType, HeaderBuffer("us_postal_codes.txt")) {}
+    // TODO change when HeaderBuffer has a default constructor
+
+
+
+
+
+
 
     //** @brief Destructor to close the file when done. */
     //~ZipCodeBuffer();

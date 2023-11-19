@@ -7,9 +7,17 @@
 #include <string>
 #include <vector>
 #include "BlockBuffer.h"
+#include "HeaderBuffer.h"
 #include <sstream>
 
-using namespace std;
+
+
+BlockBuffer::BlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer = HeaderBuffer("blocked_postal_codes.txt")) : file(file) { // TODO remove HeaderBuffer filename once it allows generic constructor
+    headerBuffer.readHeader();
+    headerSize = headerBuffer.getHeaderSizeBytes();
+    blockSize = headerBuffer.getBlockSize();
+}
+
 
 vector<string> BlockBuffer::unpackBlockRecords() {
     // This will convert a block to a vector of records
@@ -18,7 +26,7 @@ vector<string> BlockBuffer::unpackBlockRecords() {
 
     for (size_t i = 0; i < getNumRecordsInBlock(); i++)
     {
-        // If length-indicated, reads the length and retrieves that many characters for the record
+        // Reads the length and retrieves that many characters for the record
         std::string recordString;
         int numCharactersToRead = 0;
         file >> numCharactersToRead;   // Read the length indicator, the first field in each record
@@ -27,37 +35,6 @@ vector<string> BlockBuffer::unpackBlockRecords() {
         file.read(&recordString[0], numCharactersToRead);
         records.push_back(recordString);
     }
-
-    // This code was not working for me, but it may have features that should still be implemented
-    /*
-    while (idx < block.length()) {
-        // Reached filler characters of block (end of block)
-        if (block[idx] == '~') {
-            break;
-        }
-        
-        // Checking for invalid record length
-        if (idx + 2 > block.length()) {
-            std::cerr << "Error: Block ends unexpectedly, or index operations errored in BlockBuffer.cpp.\n";
-            break;
-        }
-
-        try {
-            int currentRecordLength = std::stoi(block.substr(idx, 2));
-            if (idx + 3 + currentRecordLength > block.length()) {
-                std::cerr << "Error: Record length exceeds block boundary.\n";
-                break;
-            }
-            std::string currentRecord = block.substr(idx, currentRecordLength);
-            records.push_back(currentRecord);
-            idx += 3 + currentRecordLength; // Move to the start of the next record (3 represents length indicator and comma)
-        } catch (const std::invalid_argument& e) {
-            std::cerr << "Error: Could not convert record length to integer.\n";
-            break;
-        }
-
-    }
-    */
     
     return records;
 }

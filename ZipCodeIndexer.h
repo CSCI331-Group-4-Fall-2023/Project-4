@@ -35,6 +35,7 @@
 #include <map>                ///< For std::map container
 #include <fstream>            ///< For file operations
 #include "ZipCodeBuffer.h"    ///< For accessing the ZipCodeBuffer class
+#include "HeaderBuffer.h"
 
 /**
  * @class ZipCodeIndexer
@@ -63,8 +64,9 @@ public:
      * @param fileName The name of the file to index as a string.
      * @param fileType The type of the file, [C]SV or [L]ength-indicated
      * @param idxFileName The name of the index file to save/load as a string.
+     * @param headerBuffer A HeaderBuffer object for the file.
      */
-    ZipCodeIndexer(std::ifstream &file, char fileType, const std::string& idxFileName);
+    ZipCodeIndexer(std::ifstream &file, char fileType, const std::string& idxFileName, HeaderBuffer headerBuffer);
 
     /**
      * @brief Method to create an index by reading the file and storing ZIP codes and their positions.
