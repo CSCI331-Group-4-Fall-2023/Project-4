@@ -8,6 +8,38 @@
 #include <vector>
 #include <sstream>
 
+    /// @brief Constructor to initialize HeaderBuffer with a filename.
+    /// @param filename The name of the header file to be opened as a string.
+    HeaderBuffer::HeaderBuffer(){
+        // Set default values for member variables
+        fileStructureType_ = "DefaultType";
+        fileStructureVersion_ = "0.0";
+        headerSizeBytes_ = 0;
+        recordSizeBytes_ = 0;
+        sizeFormatType_ = "ASCII";
+        blockSize_ = 0;
+        minimumBlockCapacity_ = 0;
+        primaryKeyIndexFileName_ = "default_index.txt";
+        primaryKeyIndexFileSchema_ = "default_schema";
+        recordCount_ = 0;
+        blockCount_ = 0;
+        fieldCount_ = 0;
+        primaryKeyFieldIndex_ = 0;
+        RBNA_ = 0;
+        RBNS_ = 0;
+        staleFlag_ = 0;
+
+        // Add some default fields
+        Field defaultField;
+        defaultField.zipCode = "default_zip";
+        defaultField.placeName = "default_place";
+        defaultField.state = "default_state";
+        defaultField.county = "default_county";
+        defaultField.latitude = "default_latitude";
+        defaultField.longitude = "default_longitude";
+
+        fields_.push_back(defaultField);
+    }
 
     /// @brief Constructor to initialize HeaderBuffer with a filename.
     /// @param filename The name of the header file to be opened as a string.
@@ -138,71 +170,71 @@
         while (std::getline(file, line)) {
             if (line.find(" - File structure type: ") != std::string::npos) {
                 fileStructureType_ = line.substr(line.find(": ") + 2);
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - File structure version: ") != std::string::npos) {
                 fileStructureVersion_ = line.substr(line.find(": ") + 2);
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find("- Header Size (bytes): ") != std::string::npos) {
                 headerSizeBytes_ = std::stoi(line.substr(line.find(": ") + 2));
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - Record Size (bytes): ") != std::string::npos) {
                 recordSizeBytes_ = std::stoi(line.substr(line.find(": ") + 2));
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - Size Format Type: ") != std::string::npos) {
                 sizeFormatType_ = line.substr(line.find(": ") + 2);
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - Block Size: ") != std::string::npos) {
                 blockSize_ = std::stoi(line.substr(line.find(": ") + 2));
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - Minimum Block Capacity: ") != std::string::npos) {
                 minimumBlockCapacity_ = std::stoi(line.substr(line.find(": ") + 2));
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - Primary Key Index File: ") != std::string::npos) {
                 primaryKeyIndexFileName_ = line.substr(line.find(": ") + 2);
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - Primary Key Index File Schema: ") != std::string::npos) {
                 primaryKeyIndexFileSchema_ = line.substr(line.find(": ") + 2);
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - Record Count: ") != std::string::npos) {
                 recordCount_ = std::stoi(line.substr(line.find(": ") + 2));
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - Block Count: ") != std::string::npos) {
                 blockCount_ = std::stoi(line.substr(line.find(": ") + 2));
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - Field Count: ") != std::string::npos) {
                 fieldCount_ = std::stoi(line.substr(line.find(": ") + 2));
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - Primary Key: ") != std::string::npos) {
                 primaryKeyFieldIndex_ = std::stoi(line.substr(line.find(": ") + 2));
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - RBN link for Avail List: ") != std::string::npos) {
                 RBNA_ = std::stoi(line.substr(line.find(": ") + 2));
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - RBN link for active sequence set List: ") != std::string::npos) {
                 RBNS_ = std::stoi(line.substr(line.find(": ") + 2));
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find(" - Stale Flag: ") != std::string::npos) {
                 staleFlag_ = std::stoi(line.substr(line.find(": ") + 2));
-                std::cout << line << "\n" << std::endl;
+                
             }
             else if (line.find("Fields:") != std::string::npos) {
 
-                std::cout << line << "\n" << std::endl;
+                
                 Field field;
                 while (std::getline(file, line)) {
                     if (line.find("   - Zip Code: ") != std::string::npos) {
@@ -257,7 +289,6 @@
 
         headerStream << "\nFields:\n";
         for (const Field& field : fields_) {
-            std::cout << "ran\n" << std::endl;
             headerStream << "   - Zip Code: " << field.zipCode << "\n";
             headerStream << "   - Place Name: " << field.placeName << "\n";
             headerStream << "   - State: " << field.state << "\n";
