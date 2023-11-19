@@ -6,6 +6,7 @@
 #include "ZipCodeBuffer.h"
 #include "ZipCodeRecordSearch.h"
 #include "ZipCodeIndexer.h"
+#include "HeaderBuffer.h"
 
 /**
  * @brief Checks to see if a given string is a number.
@@ -56,7 +57,8 @@ void defaultMessage(const std::string& commandName) {
 void searchHelper(std::string fileName, char fileType, char* zip) {
     // Create an index and load it from the index file
     std::ifstream file(fileName);
-    ZipCodeIndexer index(file, fileType, fileName + "_index.txt");
+    HeaderBuffer headerBuffer(fileName);
+    ZipCodeIndexer index(file, fileType, fileName + "_index.txt", headerBuffer);
     index.loadIndexFromRAM();
 
     // Get the position of the ZIP code in the file
@@ -64,7 +66,7 @@ void searchHelper(std::string fileName, char fileType, char* zip) {
 
     if (position != std::streampos(-1)) {
         // Open the buffer and set the position
-        ZipCodeBuffer buffer(file, fileType);
+        ZipCodeBuffer buffer(file, fileType, headerBuffer);
         buffer.setCurrentPosition(position);
 
         // Read the record at the specified position

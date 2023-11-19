@@ -133,5 +133,5 @@ private:
     int staleFlag_;
     std::vector<Field> fields_;
 };
-#include "HeaderBuffer.cpp"
+//#include "HeaderBuffer.cpp"
 #endif // HEADERBUFFER_H

@@ -35,6 +35,14 @@
 #ifndef BLOCKBUFFER_H
 #define BLOCKBUFFER_H
 
+#include <iostream>
+#include <fstream> // for file operations
+#include <string>
+#include <vector>
+#include "BlockBuffer.h"
+#include "HeaderBuffer.h"
+#include <sstream>
+
 using namespace std;
 
 class BlockBuffer {
@@ -44,17 +52,19 @@ private:
     int currentRBN = 0;         // Relative Block Number (RBN) of the current block
     int prevRBN = -1;           // RBN of the previous block in the linked list
     int nextRBN = 0;            // RBN of the next block in the linked list 
-    int blockSize = 512; // TODO replace hardcoded 512 bytes with reading from the header record buffer
-    int headerSize = 53; // TODO replace hardcoded bytes with reading from header record buffer
+    int blockSize = 512;        // Number of bytes in every block, which will be read from the metadata
+    int headerSize = 53;        // Number of bytes in the metadata header record, which will be read from the metadata
 
 public:
     /**
      * @brief Construct a new Block Buffer object.
      * @param file The file to read.
+     * @param headerBuffer A HeaderBuffer object for the file.
      * @pre: The block is a string.
      * @post: A new Block Buffer object is created.
      */
-    BlockBuffer(std::ifstream &file) : file(file) {}
+    BlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer);
+    //BlockBuffer(std::ifstream &file) : BlockBuffer(file, HeaderBuffer("blocked_postal_codes.txt")) {} // TODO replace hardcoded file name once HeaderBuffer allows generic constructor
 
 
     /**

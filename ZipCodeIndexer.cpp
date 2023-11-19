@@ -3,14 +3,15 @@
 /// @brief Implementation of the ZipCodeIndexer class for indexing ZIP code records in a file.
 
 #include "ZipCodeIndexer.h"
+#include "HeaderBuffer.h"
 
 /// @brief Constructor for the ZipCodeIndexer class.
 // Initializes the buffer object with the given file name
 // and sets the index file name
 /// @param fileName The name of the  file to index as a string.
 /// @param idxFileName The name of the index file to save/load as a string.
-ZipCodeIndexer::ZipCodeIndexer(std::ifstream &file, char fileType, const std::string& idxFileName)
-    : buffer(file, fileType), indexFileName(idxFileName) {}
+ZipCodeIndexer::ZipCodeIndexer(std::ifstream &file, char fileType, const std::string& idxFileName, HeaderBuffer headerBuffer)
+    : buffer(file, fileType, headerBuffer), indexFileName(idxFileName) {}
 
 /// @brief Create an index of ZIP codes to their positions in the file.
 // This function creates an index of ZIP codes to their positions in the file

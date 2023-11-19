@@ -9,9 +9,12 @@
 #include <sstream> 
 #include "ZipCodeBuffer.h"
 #include "BlockBuffer.h"
+#include "HeaderBuffer.h"
 
 /// @brief Constructor that accepts the filename.
-ZipCodeBuffer::ZipCodeBuffer(std::ifstream &file, char fileType) : file(file), fileType(std::toupper(fileType)), blockBuffer(BlockBuffer(file)) {
+ZipCodeBuffer::ZipCodeBuffer(std::ifstream &file, char fileType = 'L', HeaderBuffer headerBuffer = HeaderBuffer("us_postal_codes.txt")) : file(file),
+    fileType(std::toupper(fileType)), blockBuffer(BlockBuffer(file, headerBuffer)), headerBuffer(headerBuffer) { // TODO change HeaderBuffer initialization once it has a generic constructor
+
     if (this->fileType == 'C') {
         // If CSV, skip the header line.
         std::string line;
@@ -19,20 +22,24 @@ ZipCodeBuffer::ZipCodeBuffer(std::ifstream &file, char fileType) : file(file), f
     }
     else if (this->fileType == 'L' || this->fileType == 'B') {
         // If length-indicated or blocked length-indicated file, skip the header line.
+        // We have to skip past the metadata, up to the "Data: line"
         std::string line;
-        getline(file, line); // Skip header line
-        // TODO skip the header record instead once implemented
+        std::getline(file, line);
+        if (line.find("Header:") != std::string::npos)
+        {
+            // File contains a metadata header
+
+            // Read lines until "Data:" is found
+            while (std::getline(file, line)) {
+                if (line.find("Data:") != std::string::npos) {
+                    break;
+                }
+            }
+        }
+        
     }
 };
 
-// @brief Destructor to close the file when done.
-/*
-ZipCodeBuffer::~ZipCodeBuffer() {
-    if (file.is_open()) {
-        file.close();
-    }
-};
-*/
 
 /// @brief Parses a string into a ZipCodeRecord struct.
 ZipCodeRecord ZipCodeBuffer::parseRecord(std::string recordString) {
@@ -81,7 +88,6 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
         return record;
     }
     
-    
     if (fileType == 'B')
     {
         if (blockRecordsIndex >= blockRecords.size() || blockRecordsIndex == -1)
@@ -104,8 +110,6 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
         {
             recordString = blockRecords[blockRecordsIndex++];
         }
-        
-        
     }
     else if (fileType == 'C')
     {
@@ -114,7 +118,7 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
     }
     else if (fileType == 'L')
     {
-        // If length-indicated, reads the length and retrieves that many characters for the record
+        // If length-indicated, reads the length and retrieves that many characters for the record string
         int numCharactersToRead = 0;
         file >> numCharactersToRead;   // Read the length indicator, the first field in each record
         file.ignore(1);                // Skip the comma after the length field
@@ -123,8 +127,15 @@ ZipCodeRecord ZipCodeBuffer::readNextRecord() {
     }
 
     // If not the end of the file, read the fields in the line into the record object
-    record = parseRecord(recordString);
+    if (recordString.empty())
+    {
+        
+        // Did not read a valid record (likely due to the end of file newline), so return terminal character
+        record.zipCode = "";
+        return record;
+    }
     
+    record = parseRecord(recordString);
     return record;
 };
 

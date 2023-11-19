@@ -6,7 +6,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-// #include "BlockSearch.h"
+#include "BlockSearch.h"
 #include <vector>
 #include "BlockBuffer.h"
 #include "BlockBuffer.cpp"

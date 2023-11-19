@@ -72,9 +72,6 @@ int main(int argc, char* argv[]) {
         
         std::cout << "Enter the file name to open: ";
         std::cin >> fileName;
-        
-        //fileName = "blockedcodes.txt"; // TEST
-        //fileType = 'B'; // TEST
 
         // Attempt to open the file
         file.open(fileName);
@@ -89,20 +86,33 @@ int main(int argc, char* argv[]) {
     }
 
     
+    HeaderBuffer headerBuffer(fileName);
+
     if (fileName.find(".csv") != std::string::npos)
     {
         fileType = 'C';
     }
     else
     {
-        // TODO read from file metadata to determine whether it is length-indicated or blocked instead of using this prompt
-        std::cout << "Enter the file type (L for length-indicated, B for blocked): ";
-        std::cin >> fileType;
+        // If not a CSV, then it is either a length-indicated or blocked file with a metadata record, so read metadata
+        headerBuffer.readHeader();
+        if (headerBuffer.getBlockSize() == 0)
+        {
+            // The file does not use blocks, so it is length-indicated
+            
+            fileType = 'L';
+        }
+        else
+        {
+            // The file uses blocks
+            fileType = 'B';
+        }
+        
     }
     
 
-    // Create a ZipCodeBuffer using the file name of the CSV containing the records
-    ZipCodeBuffer buffer(file, fileType);
+    // Create a ZipCodeBuffer for accessing the records in the file
+    ZipCodeBuffer recordBuffer(file, fileType, headerBuffer);
     ZipCodeRecord record;
 
 
@@ -110,7 +120,7 @@ int main(int argc, char* argv[]) {
     if (argc == 1) {
 
         // Make a set and maps to store the state code and ZIP code coordinate extrema
-        std::set<std::string> stateCode;
+        std::set<std::string> stateCodes;
         std::map<std::string, std::vector<double>> stateCodeToCoordinatesMap;
         std::map<std::string, std::vector<std::string>> stateCodeToZipCodesMap;
 
@@ -120,14 +130,14 @@ int main(int argc, char* argv[]) {
         // Iterate through records until the terminal string "" is returned from the buffer
         while (true)
         {
-            ZipCodeRecord record = buffer.readNextRecord();
+            ZipCodeRecord record = recordBuffer.readNextRecord();
             if (record.zipCode == "") {
                 // Exit the loop if the terminal string "" was returned from the buffer
                 break;
             }
 
             // Try to add the state initial to the set and save the boolean result of whether it succeeded
-            std::pair<std::set<std::string>::iterator, bool> result = stateCode.insert(record.state);
+            std::pair<std::set<std::string>::iterator, bool> result = stateCodes.insert(record.state);
 
             if (result.second) {
                 // The initial was not already present in the set, so add it to the maps too
@@ -188,10 +198,10 @@ int main(int argc, char* argv[]) {
 
         // Display the records in the table sorted alphabetically by state name.
         // Displays State, Easternmost ZIP Code, Westernmost ZIP Code, Northernmost ZIP Code, and Southernmost ZIP Code per row
-        for (const std::string& stateInitial : stateCode) {
+        for (const std::string& stateCode : stateCodes) {
 
-            std::cout << std::left << std::setw(8) << stateInitial;
-            for (const std::string& zipCode : stateCodeToZipCodesMap[stateInitial]) {
+            std::cout << std::left << std::setw(8) << stateCode;
+            for (const std::string& zipCode : stateCodeToZipCodesMap[stateCode]) {
                 std::cout << std::setw(8) << zipCode;
             }
             std::cout << std::endl;
@@ -202,12 +212,19 @@ int main(int argc, char* argv[]) {
         // If command line parameters were given, do a search.
 
         // Generate an index (and delete the variable)
-        {
+        if (fileType != 'B') {
             std::ifstream searchFile(fileName);
-            ZipCodeIndexer index(searchFile, fileType, fileName + "_index.txt");
+            ZipCodeIndexer index(searchFile, fileType, fileName + "_index.txt", headerBuffer);
             index.createIndex();
             index.writeIndexToFile();
         }
+        else
+        {
+            // Run blocked file indexer
+            // TODO
+            ;
+        }
+        
 
 
         const std::string COMMAND_NAME = std::string(argv[0]);
@@ -226,7 +243,7 @@ int main(int argc, char* argv[]) {
                 if (flag == "") {
                     flag = std::string(argv[i]);
                 }
-                else if ((flag == "-Z" || flag == "--zipcode") && isNumber(argv[i])) {
+                else if ((flag == "-Z" || flag == "-z" || flag == "--zipcode") && isNumber(argv[i])) {
                     searchHelper(fileName, fileType, argv[i]);
                     flag = "";
                 }
