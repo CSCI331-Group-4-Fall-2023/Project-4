@@ -17,6 +17,7 @@ BlockBuffer::BlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer = Header
     headerBuffer.readHeader();
     headerSize = headerBuffer.getHeaderSizeBytes();
     blockSize = headerBuffer.getBlockSize();
+    nextRBN = headerBuffer.getRBNS();
 }
 
 
