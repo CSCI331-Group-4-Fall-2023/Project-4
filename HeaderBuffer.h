@@ -61,6 +61,9 @@ public:
         std::string longitude;
     };
 
+    /// @brief Constructor to initialize HeaderBuffer without a filename.
+    ///@param none.
+    HeaderBuffer();
 
     /// @brief Constructor to initialize HeaderBuffer with a filename.
     ///@param filename The name of the header file to be opened as a string.
@@ -138,5 +141,5 @@ private:
     int staleFlag_;
     std::vector<Field> fields_;
 };
-//#include "HeaderBuffer.cpp"
+#include "HeaderBuffer.cpp"
 #endif // HEADERBUFFER_H
