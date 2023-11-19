@@ -1,6 +1,7 @@
 /// @file HeaderBuffer.cpp
 /// @class HeaderBuffer
 /// @brief Implementation of the HeaderBuffer class for for handling header data.
+#pragma once
 #include "HeaderBuffer.h"
 #include <iostream>
 #include <fstream>
@@ -114,7 +115,7 @@
 
         if (!file.is_open()) {
             // Print an error mesage if the file cannot be opened
-            std::cerr << "Error opening the file." << std::endl;
+            std::cerr << "Error opening the file (writeHeaderToFile)." << std::endl;
             return;
         }
 

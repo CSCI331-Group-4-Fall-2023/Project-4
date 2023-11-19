@@ -68,8 +68,10 @@ string BlockSearch::searchForRecord(int target) {
             // We have found the block that contains the record we are looking for
             // now we need to actually access the block itself, which we should be able to do with BlockBuffer
 
-            ifstream dataFile("blockedcodes.txt");
-            HeaderBuffer headerBuffer("us_postal_codes_blocked.txt");
+            // ifstream dataFile("blockedcodes.txt");
+            ifstream dataFile("us_postal_codes_blocked.txt", std::ios::app);
+            // HeaderBuffer headerBuffer("us_postal_codes_blocked.txt");
+            HeaderBuffer headerBuffer;
             BlockBuffer blockbuffer(dataFile, headerBuffer);
 
             // We break down all the block into a vector of records
