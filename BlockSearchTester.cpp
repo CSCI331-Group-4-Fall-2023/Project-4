@@ -1,4 +1,4 @@
-#include "BlockSearch.h"
+#include "BlockSearch.cpp"
 #include <iostream>
 
 void testSearch(BlockSearch& searcher, const int& zipcode, const string& expected) {

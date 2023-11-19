@@ -27,7 +27,7 @@ class BlockSearch {
 private:
 
     // The index file to open
-    string indexFile = "blocked_Index.txt";
+    string indexFile;
 
 
 public:
@@ -36,7 +36,7 @@ public:
      * @pre: none
      * @post: A new BlockSearch object is created
     */
-    BlockSearch() { }
+    BlockSearch() { indexFile = "blocked_Index.txt"; }
 
     /**
      * @brief Constructor that takes in a blocked index file

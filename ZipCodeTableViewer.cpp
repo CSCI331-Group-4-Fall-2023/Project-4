@@ -57,6 +57,7 @@
 #include "ZipCodeRecordSearch.h"
 #include "ZipCodeIndexer.h"
 #include "HeaderBuffer.h"
+#include "BlockSearch.h"
 
 
 
@@ -218,11 +219,40 @@ int main(int argc, char* argv[]) {
             index.createIndex();
             index.writeIndexToFile();
         }
-        else
+        else // else fileType == B
         {
             // Run blocked file indexer
-            // TODO
-            ;
+            BlockSearch searcher;
+
+            for (int i = 1; i < argc; ++i) {
+                string arg = argv[i];
+
+                // Check if argument starts with -z or -Z
+                if (arg.size() > 2 && (arg[0] == '-' && (arg[1] == 'z' || arg[1] == 'Z'))) {
+                    string zipcodeStr = arg.substr(2);  // Extract the zipcode part
+                    int zipcode;
+
+                    try {
+                        zipcode = stoi(zipcodeStr);
+                        string result = searcher.searchForRecord(zipcode);
+
+                        if (result != "-1") {
+                            cout << "Information for zipcode " << zipcode << ":\n";
+                            searcher.displayRecord(result);
+                        } else {
+                            cout << "Zipcode " << zipcode << " not found." << "\n\n";
+                        }
+                    } catch (const invalid_argument& ia) {
+                        cerr << "Invalid zipcode format: " << zipcodeStr << endl;
+                    }
+                } else {
+                    // Invalid argument format
+                    cout << "Invalid argument: " << arg << endl;
+                    cout << "Please use the format: -z<zipcode> or -Z<zipcode>" << endl;
+                }
+            }
+
+;
         }
         
 

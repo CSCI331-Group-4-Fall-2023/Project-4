@@ -2,14 +2,15 @@
 /// @class BlockSearc
 /// @brief Implementation of the BlockSearch class for searching for records in the blocked index file.
 
-
 #include <string>
 #include <fstream>
 #include <iostream>
 #include "BlockSearch.h"
 #include <vector>
 #include "BlockBuffer.h"
-#include "BlockBuffer.cpp"
+// #include "BlockBuffer.cpp"
+#include "HeaderBuffer.h"
+// #include "HeaderBuffer.cpp"
 
 // Default constructor
 BlockSearch::BlockSearch(string idxFile) {
@@ -33,13 +34,13 @@ string BlockSearch::searchForRecord(int target) {
     // Open the index file
     ifstream readFile(indexFile);
 
-    // We have to skip past the metadata, up to the "Data: line"
+    // We have to skip past the metadata, up to the "Data: line" -- index file no longer includes this metadata
     string line;
-    while (getline(readFile, line)) {
+    /*while (getline(readFile, line)) {
         if (line == "Data:") {
             break;
         }
-    }
+    }*/
 
     // Now we are to the content of the file - we will read through the file until we find target < greatestKeyInBlock
 
@@ -66,8 +67,9 @@ string BlockSearch::searchForRecord(int target) {
             // We have found the block that contains the record we are looking for
             // now we need to actually access the block itself, which we should be able to do with BlockBuffer
 
-            ifstream dataFile("blockedcodes.txt");
-            BlockBuffer blockbuffer(dataFile);
+            ifstream dataFile("us_postal_codes_blocked.txt", std::ios::app);
+            HeaderBuffer headerBuffer2("us_postal_codes_blocked.txt");
+            BlockBuffer blockbuffer(dataFile, headerBuffer2);
 
             // We break down all the block into a vector of records
 
@@ -88,7 +90,6 @@ string BlockSearch::searchForRecord(int target) {
     return "-1";   
 }
 
-    // void BlockSearch::displayRecord(string record) {    }
 void BlockSearch::displayRecord(string record) {
     // The format of a record is: zipcode,town,state,county,latitude,longitude
     vector<string> fields;
