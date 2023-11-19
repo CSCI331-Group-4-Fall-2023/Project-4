@@ -114,7 +114,7 @@
 
         if (!file.is_open()) {
             // Print an error mesage if the file cannot be opened
-            std::cerr << "Error opening the file." << std::endl;
+            std::cerr << "Error opening the file(writeHeaderToFile)." << std::endl;
             return;
         }
 
@@ -161,7 +161,7 @@
 
         if (!file.is_open()) {
             // Print an error mesage if the file cannot be opened
-            std::cerr << "Error opening the file." << std::endl;
+            std::cerr << "Error opening the file(readHeader)." << std::endl;
             return;
         }
 
