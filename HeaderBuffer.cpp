@@ -1,7 +1,6 @@
 /// @file HeaderBuffer.cpp
 /// @class HeaderBuffer
 /// @brief Implementation of the HeaderBuffer class for for handling header data.
-#pragma once
 #include "HeaderBuffer.h"
 #include <iostream>
 #include <fstream>
