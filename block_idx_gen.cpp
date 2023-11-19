@@ -38,21 +38,21 @@ int findZipcode(const string& record) {
 int main() {
 
     // We need to first read and write the header of the file
-    HeaderBuffer header = HeaderBuffer("blocked_postal_codes.txt");
+    /* HeaderBuffer header = HeaderBuffer("blocked_postal_codes.txt");
     header.readHeader();
-    header.writeHeaderToFile("blocked_Index.txt");
+    header.writeHeaderToFile("blocked_Index.txt"); */          // The blocked index file actually does not include any metadata
 
 
     ofstream writeFile;
-    writeFile.open("blocked_Index.txt", ios::app);
+    writeFile.open("blocked_Index.txt");
     if (!writeFile.is_open()) {
         cerr << "Error: Could not open file 'blocked_Index.txt' for writing.\n";
         return 1;
     }
     
-    ifstream readFile("blocked_postal_codes.txt");
+    ifstream readFile("us_postal_codes_blocked.txt");
     if (!readFile.is_open()) {
-        cerr << "Error: Could not open file 'blocked_postalcodes.txt' for reading.\n";
+        cerr << "Error: Could not open file 'us_postal_codes_blocked.txt' for reading.\n";
         return 1;
     }
 

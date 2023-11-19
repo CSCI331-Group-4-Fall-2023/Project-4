@@ -14,7 +14,7 @@
  */
 // ----------------------------------------------------------------------------
 
-#include "BlockSearch.h"
+#include "BlockSearch.cpp"
 #include <iostream>
 #include <string>
 
