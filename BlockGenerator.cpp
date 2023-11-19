@@ -4,19 +4,22 @@
  * @brief File for generating a blocked sequence set
  * @author Andrew Clayton
  * @date 11/13/2023
- * @version 1.5
+ * @version 1.4
  */
  // ----------------------------------------------------------------------------
  /**
   * @details
   *
-  * \n The BlockGenerator class converts the length-indicated data into blocked data.
-  * \n Block size is 512 bytes, and the minimum block capacity is 50%. Block capacity is currently set to 75%. All records in blocks are complete.
-  * \n Blocks are separated on different lines (end of line character), and records within a block are only distinct via length indication. 
-  * \n This file includes metadata: relative block number (RBN), number of records in the block, RBN of previous block, and RBN of next block.
-  * \n An avail list is also created, and this is indicated in the metadata.
+  * The BlockGenerator class converts the length-indicated data into blocked data.
+  * Block size is 512 bytes, and the minimum block capacity is 50%. Block capacity is currently set to 75%. All records in blocks are complete.
+  * Blocks are separated on different lines (end of line character), and records within a block are only distinct via length indication. 
+  * This file includes metadata: relative block number (RBN), number of records in the block, RBN of previous block, and RBN of next block.
   *
-  *///----------------------------------------------------------------------------
+  Assumptions:
+  *
+   -- The file is in the same directory as the program.
+  */
+  // ----------------------------------------------------------------------------
 
     
 #include <iostream>
@@ -33,9 +36,9 @@ int main(int argc, char* argv[]) {
 
 
     // We need to first read and write the header of the file
-    HeaderBuffer header = HeaderBuffer("us_postal_codes_blocked.txt");
+    HeaderBuffer header = HeaderBuffer("us_postal_codes.txt");
     header.readHeader();
-    header.writeHeaderToFile("us_postal_codes_blocked.txt");
+    header.writeHeaderToFile("blocked_postal_codes.txt");
 
     // Now we can proceed with the blocked data generation, but we have to make sure the file opens up where we left off
 
@@ -134,17 +137,6 @@ int main(int argc, char* argv[]) {
 
     // Pad the block with '~'
     for (int i = 0; i < BLOCK_SIZE - currentBlockSize - metadataLength; i++) {
-        writeFile << "~";
-    }
-
-
-    // Once all of this is done, we need to create an empty avail list. The next and previous RBNs will be -1
-    // The avail list will be at the end of the file, and will be the last block
-    // The metadata will be: LI,RBN,#ofRecords,prevBlock,nextBlock,
-    string availListMetadata = to_string(currentBlock+1) + ",0,-1,-1,";
-    int availListMetadataLength = availListMetadata.length() + 3; // Including LI and comma and ending comma
-    writeFile << "\n" << availListMetadataLength << "," << availListMetadata;
-    for (int i = 0; i < BLOCK_SIZE - availListMetadataLength; i++) {
         writeFile << "~";
     }
 
