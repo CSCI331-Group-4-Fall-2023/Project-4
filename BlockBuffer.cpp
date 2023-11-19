@@ -12,8 +12,7 @@
 
 
 
-/// @brief Construct a new Block Buffer object.
-BlockBuffer::BlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer = HeaderBuffer("us_postal_codes_blocked.txt")) : file(file) {
+BlockBuffer::BlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer = HeaderBuffer("blocked_postal_codes.txt")) : file(file) { // TODO remove HeaderBuffer filename once it allows generic constructor
     headerBuffer.readHeader();
     headerSize = headerBuffer.getHeaderSizeBytes();
     blockSize = headerBuffer.getBlockSize();
@@ -21,8 +20,6 @@ BlockBuffer::BlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer = Header
 }
 
 
-
-/// @brief Unpacks the length-indicated records from the block into a string vector.
 vector<string> BlockBuffer::unpackBlockRecords() {
     // This will convert a block to a vector of records
     size_t idx = 0;
@@ -101,7 +98,7 @@ vector<string> BlockBuffer::readBlock(int relativeBlockNumber) {
         return recordStrings;
     }
     
-    moveToBlock(relativeBlockNumber);   // Move to the next block
+    moveToBlock(relativeBlockNumber);               // Move to the next block
     return readCurrentBlock();          // Read the metadata and the records
 }
 
@@ -114,7 +111,6 @@ vector<string> BlockBuffer::readCurrentBlock() {
 }
 
 
-/// @brief Moves to and reads the next block in the linked list and returns it as a vector of records in string form.
 vector<string> BlockBuffer::readNextBlock() {
     return readBlock(nextRBN);
 }

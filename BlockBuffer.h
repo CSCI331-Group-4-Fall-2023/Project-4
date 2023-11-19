@@ -5,7 +5,7 @@
  * @brief Reads blocks of length-indicated records from a blocked file.
  * @author Kent Biernath
  * @author Andrew Clayton
- * @date 2023-11-19
+ * @date 2023-11-14
  * @version 1.0
  */
 // ----------------------------------------------------------------------------
@@ -24,7 +24,7 @@
  * \n The Relative Block Number (RBN) is used to navigate the file and starts
  *    at 0 for the first block. The Previous RBN and Next RBN are used to
  *    navigate the file in logical order. A Previous/Next RBN of -1 means the
- *    current block is the first/last block.
+ *    block is the first/last block.
  * \n
  * \n The records within each block are length-indicated and have no other
  *    delimiters. The length field is separated from the rest of the record
@@ -48,12 +48,12 @@ using namespace std;
 class BlockBuffer {
 private: 
     std::ifstream &file;        // The ifstream to read blocks from.
-    int numRecordsInBlock = 0;  // Number of records in the current block (read from block metadata)
+    int numRecordsInBlock = 0;  // Number of records in the current block (read from metadata)
     int currentRBN = 0;         // Relative Block Number (RBN) of the current block
     int prevRBN = -1;           // RBN of the previous block in the linked list
     int nextRBN = 0;            // RBN of the next block in the linked list 
-    int blockSize = 512;        // Number of bytes in every block, which will be read from the file metadata
-    int headerSize = 53;        // Number of bytes in the metadata header record, which will be read from the file metadata
+    int blockSize = 512;        // Number of bytes in every block, which will be read from the metadata
+    int headerSize = 53;        // Number of bytes in the metadata header record, which will be read from the metadata
 
 public:
     /**
@@ -64,6 +64,7 @@ public:
      * @post: A new Block Buffer object is created.
      */
     BlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer);
+    //BlockBuffer(std::ifstream &file) : BlockBuffer(file, HeaderBuffer("blocked_postal_codes.txt")) {} // TODO replace hardcoded file name once HeaderBuffer allows generic constructor
 
 
     /**
@@ -82,7 +83,7 @@ public:
     */
     void readBlockMetadata();
 
-    // Block metadata getters
+    // Metadata getters
     int getCurrentRBN() const { return currentRBN; }
     int getPrevRBN() const { return prevRBN; }
     int getNextRBN() const { return nextRBN; }
@@ -102,16 +103,16 @@ public:
      * @brief Reads the current block after the file pointer and returns it as a vector of records in string form.
      * @return A vector of strings where each string represents a record within the block.
      * \n      The length indication field for each record is read but not returned in the string.
-     * @pre: The file pointer is at the start of the block. relativeBlockNumber is a valid RBN.
+     * @pre: The file pointer is at the start of the block.
      * @post: The block is broken down into records and the file pointer is after the records in the block.
      */
     vector<string> readCurrentBlock();
 
     /**
-     * @brief Moves to and reads the next block in the linked list and returns it as a vector of records in string form.
+     * @brief Moves to and reads the next block and returns it as a vector of records in string form.
      * @return A vector of strings where each string represents a record within the block.
      * \n      The length indication field for each record is read but not returned in the string.
-     * @pre: The file is open and in a blocked length-indicated file format. nextRBN is a valid RBN.
+     * @pre: The file is open and in a blocked length-indicated file format.
      * @post: The block is broken down into records and the file pointer is after the records in the block.
      */
     vector<string> readNextBlock();
@@ -135,4 +136,7 @@ public:
     void moveToBlock(int relativeBlockNumber);
 
 };
+
+//#include "BlockBuffer.cpp"
+
 #endif

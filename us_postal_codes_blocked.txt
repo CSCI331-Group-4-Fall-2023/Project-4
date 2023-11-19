@@ -9,7 +9,7 @@ Header:
  - Primary Key Index File: blocked_postal_codes.txt_index.txt
  - Primary Key Index File Schema: sample
  - Record Count: 40933
- - Block Count: 4640
+ - Block Count: 4641
  - Field Count: 5
  - Primary Key: 0
  - RBN link for Avail List: 4640
