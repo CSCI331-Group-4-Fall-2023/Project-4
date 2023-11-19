@@ -2,10 +2,10 @@
 /**
  * @file ZipCodeTableViewer.cpp
  * @brief Console program for displaying a table of the most eastern, western,
- *      northern, and southern ZIP codes for each state code in a file.
+ *      northern, and southern ZIP codes for each state code in a file or
+ *      searching the records for given ZIP codes.
  * @author Kent Biernath
- * @author Emma Hoffmann, Emily Yang
- * @author Rediet Gelaw, Devon Lattery, Bhumika Basnet
+ * @author Emma Hoffmann, Emily Yang, Devon Lattery
  * @date 2023-10-16
  * @version 2.0
  */
@@ -124,9 +124,6 @@ int main(int argc, char* argv[]) {
         std::set<std::string> stateCodes;
         std::map<std::string, std::vector<double>> stateCodeToCoordinatesMap;
         std::map<std::string, std::vector<std::string>> stateCodeToZipCodesMap;
-
-
-
 
         // Iterate through records until the terminal string "" is returned from the buffer
         while (true)
