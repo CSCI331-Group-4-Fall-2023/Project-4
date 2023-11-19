@@ -4,7 +4,7 @@
  * @class MainSearch
  * @brief Uses the BlockSearch class to find zipcodes listed in command line arguments.
  * @author Andrew Clayton
- * @date 2023-17-14
+ * @date 2023-11-19
  * @version 1.0
  */
 // ----------------------------------------------------------------------------
@@ -14,7 +14,7 @@
  */
 // ----------------------------------------------------------------------------
 
-#include "BlockSearch.cpp"
+#include "BlockSearch.h"
 #include <iostream>
 #include <string>
 
