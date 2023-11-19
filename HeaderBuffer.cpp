@@ -6,6 +6,7 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <sstream>
 
 
     /// @brief Constructor to initialize HeaderBuffer with a filename.
@@ -13,52 +14,68 @@
     HeaderBuffer::HeaderBuffer(const std::string& filename) : filename_(filename) {
     }
 
-    /// @brief Write the header data to a file.
+    /// @brief Write the header data to a file. Used for updating the file in the object 
     /// @pre The file must be successfully opened for writing.
     void HeaderBuffer::writeHeader() {
-        std::ofstream file(filename_);
+        const std::string tempFilename = "tempfile.txt";
 
-        if (!file.is_open()) {
-            // Print an error mesage if the file cannot be opened
-            std::cerr << "Error opening the file." << std::endl;
+        // Step 1: Write the data portion to the temporary file
+        std::ofstream tempFile(tempFilename);
+
+        if (!tempFile.is_open()) {
+            std::cerr << "Error creating temporary file." << std::endl;
             return;
         }
 
-        //version for seeing all the stuff
-        file << "Header:" << std::endl;
-        file << " - File structure type: " << fileStructureType_ << std::endl;
-        file << " - File structure version: " << fileStructureVersion_ << std::endl;
-        file << " - Header Size (bytes): " << headerSizeBytes_ << std::endl;
-        file << " - Record Size (bytes): " << recordSizeBytes_ << std::endl;
-        file << " - Size Format Type: " << sizeFormatType_ << std::endl;
-        file << " - Block Size: " << blockSize_ << std::endl;
-        file << " - Minimum Block Capacity: " << minimumBlockCapacity_ << std::endl;
-        file << " - Primary Key Index File: " << primaryKeyIndexFileName_ << std::endl;
-        file << " - Primary Key Index File Schema: " << primaryKeyIndexFileSchema_ << std::endl;
-        file << " - Record Count: " << recordCount_ << std::endl;
-        file << " - Block Count: " << blockCount_ << std::endl;
-        file << " - Field Count: " << fieldCount_ << std::endl;
-        file << " - Primary Key: " << primaryKeyFieldIndex_ << std::endl;
-        file << " - RBN link for Avail List: " << RBNA_ << std::endl;
-        file << " - RBN link for active sequence set List: " << RBNS_ << std::endl;
-        file << " - Stale Flag: " << staleFlag_ << std::endl;
+        // Open the main file
+        std::ifstream mainFile(filename_);
 
-        for (const Field& field : fields_) {
-            file << std::endl;
-            file << "Fields:" << std::endl;
-            file << "   - Zip Code: " << field.zipCode << std::endl;
-            file << "   - Place Name: " << field.placeName << std::endl;
-            file << "   - State: " << field.state << std::endl;
-            file << "   - County: " << field.county << std::endl;
-            file << "   - Latitude: " << field.latitude << std::endl;
-            file << "   - Longitude: " << field.longitude << std::endl;
+        if (!mainFile.is_open()) {
+            std::cerr << "Error opening main file." << std::endl;
+            tempFile.close();
+            return;
         }
 
-        file << std::endl;
-        file << "Data:" << std::endl;
+        // Write your data to the temporary file here
+        std::string line;
+        bool copyStarted = false;
 
-        file.close();
+        while (std::getline(mainFile, line)) {
+            if (copyStarted) {
+                tempFile << line << std::endl;
+            } else if (line.find("Data:") != std::string::npos) {
+                copyStarted = true;
+            }
+        }
+
+        // Close the main file and the temporary file
+        mainFile.close();
+        tempFile.close();
+
+        // Step 2: Overwrite the main file with the header
+        this->setHeaderSizeBytes(calculateHeaderSize());
+        writeHeaderToFile(filename_);
+
+        // Step 3: Append the data from the temporary file to the main file
+        std::ifstream tempFileReader(tempFilename);
+        std::ofstream mainFileWriter(filename_, std::ios::app); // Open the file in append mode
+
+        if (!tempFileReader.is_open() || !mainFileWriter.is_open()) {
+            std::cerr << "Error opening files." << std::endl;
+            tempFileReader.close();
+            mainFileWriter.close();
+            return;
+        }
+
+        mainFileWriter << tempFileReader.rdbuf();
+
+        // Close files and remove the temporary file
+        tempFileReader.close();
+        mainFileWriter.close();
+        std::remove(tempFilename.c_str());
     }
+
+
     //version of writeHeader that prints to a file of choice rather than the file held by the object
     void HeaderBuffer::writeHeaderToFile(const std::string& filename) {
         std::ofstream file(filename);
@@ -184,6 +201,8 @@
                 std::cout << line << "\n" << std::endl;
             }
             else if (line.find("Fields:") != std::string::npos) {
+
+                std::cout << line << "\n" << std::endl;
                 Field field;
                 while (std::getline(file, line)) {
                     if (line.find("   - Zip Code: ") != std::string::npos) {
@@ -211,6 +230,47 @@
 
         file.close();
     }
+
+    /// @brief calculates the total bytes the header will take up based on its static structure and variables
+    /// @pre the header object must have data to work with 
+    int HeaderBuffer::calculateHeaderSize() const {
+        std::stringstream headerStream;
+
+        // Write header data to a stringstream
+        headerStream << "Header:\n";
+        headerStream << " - File structure type: " << fileStructureType_ << "\n";
+        headerStream << " - File structure version: " << fileStructureVersion_ << "\n";
+        headerStream << " - Header Size (bytes): " << headerSizeBytes_ << "\n";
+        headerStream << " - Record Size (bytes): " << recordSizeBytes_ << "\n";
+        headerStream << " - Size Format Type: " << sizeFormatType_ << "\n";
+        headerStream << " - Block Size: " << blockSize_ << "\n";
+        headerStream << " - Minimum Block Capacity: " << minimumBlockCapacity_ << "\n";
+        headerStream << " - Primary Key Index File: " << primaryKeyIndexFileName_ << "\n";
+        headerStream << " - Primary Key Index File Schema: " << primaryKeyIndexFileSchema_ << "\n";
+        headerStream << " - Record Count: " << recordCount_ << "\n";
+        headerStream << " - Block Count: " << blockCount_ << "\n";
+        headerStream << " - Field Count: " << fieldCount_ << "\n";
+        headerStream << " - Primary Key: " << primaryKeyFieldIndex_ << "\n";
+        headerStream << " - RBN link for Avail List: " << RBNA_ << "\n";
+        headerStream << " - RBN link for active sequence set List: " << RBNS_ << "\n";
+        headerStream << " - Stale Flag: " << staleFlag_ << "\n";
+
+        headerStream << "\nFields:\n";
+        for (const Field& field : fields_) {
+            std::cout << "ran\n" << std::endl;
+            headerStream << "   - Zip Code: " << field.zipCode << "\n";
+            headerStream << "   - Place Name: " << field.placeName << "\n";
+            headerStream << "   - State: " << field.state << "\n";
+            headerStream << "   - County: " << field.county << "\n";
+            headerStream << "   - Latitude: " << field.latitude << "\n";
+            headerStream << "   - Longitude: " << field.longitude << "\n";
+        }
+
+        headerStream << "\nData:\n";
+
+        // Calculate total size including the newline characters
+        return static_cast<int>(headerStream.str().size());
+}
 
     /// @brief Setters for various header fields.
     /// @param fileStructureType The file structure type as a string.

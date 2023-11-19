@@ -5,8 +5,9 @@
  * @brief Represents a class for handling header data..
  * @author Emma Hoffmann
  * @author Kent Biernath
+ * @author Tristan Adams
  * @date 2023-10-16
- * @version 1.0
+ * @version 2.0
  */
 // ----------------------------------------------------------------------------
 /**
@@ -77,6 +78,10 @@ public:
     /// @brief Read header data from a file.
     /// @pre The file must be successfully opened for reading.
     void readHeader();
+
+    /// @brief calculates the size of the header in bytes
+    /// @pre values must be in the istance of headerBuffer's variables to count
+    int calculateHeaderSize() const;
 
     void setFileStructureType(const std::string& fileStructureType);
     void setFileStructureVersion(const std::string& fileStructureVersion);

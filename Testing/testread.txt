@@ -9,7 +9,7 @@ Header:
  - Primary Key Index File: index.txt
  - Primary Key Index File Schema: sample
  - Record Count: 1000
- - Block Count: 10622
+ - Block Count: 29
  - Field Count: 5
  - Primary Key: 2
  - RBN link for Avail List: 3
