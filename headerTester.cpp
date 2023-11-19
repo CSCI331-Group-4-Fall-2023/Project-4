@@ -39,12 +39,20 @@ int main(){
     headerBuffer.addField(field1);
 
     // Write the header to a file
-    headerBuffer.writeHeader();
+    //headerBuffer.writeHeader();
 
     // Read the header from a file
     HeaderBuffer headerBuffer2("us_postal_codes.txt");
     headerBuffer2.readHeader();
+    headerBuffer2.setBlockCount(29);
     headerBuffer2.writeHeaderToFile("testread.txt");
+    headerBuffer2.writeHeader();
+
+    int calculatedSize = headerBuffer.calculateHeaderSize();
+    std::cout << "Calculated Header Size: " << calculatedSize << " bytes\n" << std::endl;
+    
+    int calculatedSize2 = headerBuffer2.calculateHeaderSize();
+    std::cout << "Calculated Header Size: " << calculatedSize2 << " bytes\n" << std::endl;
     return 0;
 
 }
