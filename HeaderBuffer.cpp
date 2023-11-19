@@ -183,7 +183,7 @@
                 staleFlag_ = std::stoi(line.substr(line.find(": ") + 2));
                 std::cout << line << "\n" << std::endl;
             }
-            else if (line.find("- Fields:") != std::string::npos) {
+            else if (line.find("Fields:") != std::string::npos) {
                 Field field;
                 while (std::getline(file, line)) {
                     if (line.find("   - Zip Code: ") != std::string::npos) {
