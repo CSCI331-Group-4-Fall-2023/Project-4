@@ -2,16 +2,15 @@
 /// @class BlockSearc
 /// @brief Implementation of the BlockSearch class for searching for records in the blocked index file.
 
-
 #include <string>
 #include <fstream>
 #include <iostream>
 #include "BlockSearch.h"
 #include <vector>
 #include "BlockBuffer.h"
-#include "BlockBuffer.cpp"
+// #include "BlockBuffer.cpp"
 #include "HeaderBuffer.h"
-#include "HeaderBuffer.cpp"
+// #include "HeaderBuffer.cpp"
 
 // Default constructor
 BlockSearch::BlockSearch(string idxFile) {
@@ -68,11 +67,9 @@ string BlockSearch::searchForRecord(int target) {
             // We have found the block that contains the record we are looking for
             // now we need to actually access the block itself, which we should be able to do with BlockBuffer
 
-            // ifstream dataFile("blockedcodes.txt");
             ifstream dataFile("us_postal_codes_blocked.txt", std::ios::app);
-            // HeaderBuffer headerBuffer("us_postal_codes_blocked.  txt");
-            HeaderBuffer headerBuffer("us_postal_codes_blocked.txt");
-            BlockBuffer blockbuffer(dataFile, headerBuffer);
+            HeaderBuffer headerBuffer2("us_postal_codes_blocked.txt");
+            BlockBuffer blockbuffer(dataFile, headerBuffer2);
 
             // We break down all the block into a vector of records
 
