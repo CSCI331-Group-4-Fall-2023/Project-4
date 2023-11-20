@@ -59,6 +59,7 @@
 #include "ZipCodeIndexer.h"
 #include "HeaderBuffer.h"
 #include "BlockSearch.h"
+#include "Dump.h"
 
 
 
@@ -116,6 +117,16 @@ int main(int argc, char* argv[]) {
     // Create a ZipCodeBuffer for accessing the records in the file
     ZipCodeBuffer recordBuffer(file, fileType, headerBuffer);
     ZipCodeRecord record;
+
+
+    // Test code for the dumps
+    /*
+    ifstream dumpInputFile(fileName);
+    ZipCodeBuffer dumpRecordBuffer(dumpInputFile, fileType, HeaderBuffer(fileName));
+    Dump dump(dumpRecordBuffer);
+    dump.dumpPhysicalOrder();
+    dump.dumpBlockIndex("blocked_Index.txt");
+    */
 
 
     // If the program is given no arguments, display the table

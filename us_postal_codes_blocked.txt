@@ -12,7 +12,7 @@ Header:
  - Block Count: 4641
  - Field Count: 5
  - Primary Key: 0
- - RBN link for Avail List: 4640
+ - RBN link for Avail List: 4641
  - RBN link for active sequence set List: 0
  - Stale Flag: 0
 

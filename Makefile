@@ -3,7 +3,7 @@ CXX = g++
 CXXFLAGS = -std=c++11
 
 # Source files
-SOURCES = ZipCodeTableViewer.cpp ZipCodeBuffer.cpp ZipCodeIndexer.cpp ZipCodeRecordSearch.cpp BlockBuffer.cpp HeaderBuffer.cpp BlockSearch.cpp
+SOURCES = ZipCodeTableViewer.cpp ZipCodeBuffer.cpp ZipCodeIndexer.cpp ZipCodeRecordSearch.cpp BlockBuffer.cpp HeaderBuffer.cpp BlockSearch.cpp Dump.cpp
 
 # Output executable name
 OUTPUT = ZipCode.exe

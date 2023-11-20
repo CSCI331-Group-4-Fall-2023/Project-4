@@ -140,8 +140,8 @@ public:
     /// @brief Method to set the current position in the file to a given streampos.
     std::ifstream& setCurrentPosition(std::streampos);
 
-    // Give BlockBuffer access to private member functions and variables.
-    //friend class BlockBuffer;
+    // Give Dump access to private member functions and variables.
+    friend class Dump;
 };
 
 #endif // ZIPCODEBUFFER_H
