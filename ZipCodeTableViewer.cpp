@@ -4,10 +4,10 @@
  * @brief Console program for displaying a table of the most eastern, western,
  *      northern, and southern ZIP codes for each state code in a file.
  * @author Kent Biernath
- * @author Emma Hoffmann, Emily Yang
- * @author Rediet Gelaw, Devon Lattery, Bhumika Basnet
- * @date 2023-10-16
- * @version 2.0
+ * @author Andrew Clayton
+ * @author Emma Hoffmann, Emily Yang, Devon Lattery
+ * @date 2023-11-19
+ * @version 3.0
  */
 // ----------------------------------------------------------------------------
 /**
@@ -36,7 +36,8 @@
  *    the record.
  * \n
  * \n If the program is launched with command line arguments -Z or --Zip, it
- * \n will do a search. See ZipCodeRecordSearch.cpp for details.
+ * \n will do a search. See ZipCodeRecordSearch.cpp and BlockSearch.cpp for
+ *    details.
  * \n
  * \n  Assumptions:
  * \n  -- The file is in the same directory as the program.
@@ -69,7 +70,7 @@ int main(int argc, char* argv[]) {
 
     // Loop until a valid file name is provided by the user
     while (true) {
-        // Prompt the user for a file name
+        // Prompt the user for a file name until a valid one is given
         
         std::cout << "Enter the file name to open: ";
         std::cin >> fileName;
@@ -117,16 +118,13 @@ int main(int argc, char* argv[]) {
     ZipCodeRecord record;
 
 
-    // If no arguments, display the table
+    // If the program is given no arguments, display the table
     if (argc == 1) {
 
         // Make a set and maps to store the state code and ZIP code coordinate extrema
         std::set<std::string> stateCodes;
         std::map<std::string, std::vector<double>> stateCodeToCoordinatesMap;
         std::map<std::string, std::vector<std::string>> stateCodeToZipCodesMap;
-
-
-
 
         // Iterate through records until the terminal string "" is returned from the buffer
         while (true)
@@ -212,17 +210,44 @@ int main(int argc, char* argv[]) {
     {
         // If command line parameters were given, do a search.
 
-        // Generate an index (and delete the variable)
         if (fileType != 'B') {
+            // Generate an index
             std::ifstream searchFile(fileName);
             ZipCodeIndexer index(searchFile, fileType, fileName + "_index.txt", headerBuffer);
             index.createIndex();
             index.writeIndexToFile();
+
+            const std::string COMMAND_NAME = std::string(argv[0]);
+            // If no flags are used, display the default message
+            if (argc == 1) {
+                defaultMessage(COMMAND_NAME);
+                return 0;
+            } // If a help flag is used, display usage information
+            else if (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help") {
+                displayHelp(COMMAND_NAME);
+                return 0;
+            }
+            else {
+                std::string flag = "";
+                for (int i = 1; i < argc; i++) {
+                    if (flag == "") {
+                        flag = std::string(argv[i]);
+                    }
+                    else if ((flag == "-Z" || flag == "-z" || flag == "--zipcode") && isNumber(argv[i])) {
+                        searchHelper(fileName, fileType, argv[i]);
+                        flag = "";
+                    }
+                    else {
+                        std::cerr << "INVALID ARGUMENT" << std::endl;
+                        defaultMessage(COMMAND_NAME);
+                        return 1;
+                    }
+                }
+            }
         }
         else // else fileType == B
         {
-            // Run blocked file indexer
-            BlockSearch searcher;
+            // Run blocked file search
 
             for (int i = 1; i < argc; ++i) {
                 string arg = argv[i];
@@ -233,6 +258,7 @@ int main(int argc, char* argv[]) {
                     int zipcode;
 
                     try {
+                        BlockSearch searcher;
                         zipcode = stoi(zipcodeStr);
                         string result = searcher.searchForRecord(zipcode);
 
@@ -249,38 +275,6 @@ int main(int argc, char* argv[]) {
                     // Invalid argument format
                     cout << "Invalid argument: " << arg << endl;
                     cout << "Please use the format: -z<zipcode> or -Z<zipcode>" << endl;
-                }
-            }
-
-;
-        }
-        
-
-
-        const std::string COMMAND_NAME = std::string(argv[0]);
-        // If no flags are used, display the default message
-        if (argc == 1) {
-            defaultMessage(COMMAND_NAME);
-            return 0;
-        } // If a help flag is used, display usage information
-        else if (std::string(argv[1]) == "-h" || std::string(argv[1]) == "--help") {
-            displayHelp(COMMAND_NAME);
-            return 0;
-        }
-        else {
-            std::string flag = "";
-            for (int i = 1; i < argc; i++) {
-                if (flag == "") {
-                    flag = std::string(argv[i]);
-                }
-                else if ((flag == "-Z" || flag == "-z" || flag == "--zipcode") && isNumber(argv[i])) {
-                    searchHelper(fileName, fileType, argv[i]);
-                    flag = "";
-                }
-                else {
-                    std::cerr << "INVALID ARGUMENT" << std::endl;
-                    defaultMessage(COMMAND_NAME);
-                    return 1;
                 }
             }
         }
