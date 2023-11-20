@@ -37,7 +37,7 @@ string BlockSearch::searchForRecord(int target) {
     ifstream readFile(indexFile);
     string line;
     
-    // Read through the file until we find target < greatestKeyInBlock
+    // Read through the file until we find target <= greatestKeyInBlock
 
     // Iterate through each line of the file
     while (getline(readFile, line)) {
@@ -58,7 +58,7 @@ string BlockSearch::searchForRecord(int target) {
             // return "-1";
         }
         
-        if (target < greatestKeyInBlock) {
+        if (target <= greatestKeyInBlock) {
             // We have found the block that contains the record we are looking for
             // now we need to actually access the block itself, which we should be able to do with BlockBuffer
 
