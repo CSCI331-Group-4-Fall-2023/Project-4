@@ -1,0 +1,95 @@
+Zip Code Group Project 3.0 
+
+User Guide 
+
+ 
+
+Date: 11/19/2023 
+
+Team 1 Members: Tristan Adams, Kent Biernath, Andrew Clayton, Emma Hoffmann 
+
+ 
+
+Project Overview 
+
+Zip Code Group Project 3.0 is an advancement to the existing C++ application developed in previous Zip Code Group Projects 1.0 and 2.0. This project involves generating blocked sequence set files, improving record management, enhancing search functionality, and creating primary key indexes. The focus is on maintaining scalability and usability to optimize efficient data processing.  
+
+ 
+
+Usage Instructions 
+
+Compilation using Makefile 
+
+A Makefile is provided to simplify the compilation process. It automates the build process by specifying rules for compiling and code cleaning. 
+
+ 
+
+Compiler and Compiler Flags 
+
+ - `CXX`: Specifies the C++ compiler as `g++`. 
+
+ - `CXXFLAGS`: Sets compiler flags, including C++ standard version (`-std=c++11`).  
+
+ 
+
+Source Files 
+
+ - `SOURCES`: Lists the source code files.  
+
+ 
+
+Output Executable 
+
+ - `OUTPUT`: Specifies the name of the output executable as `ZipCode.exe`.  
+
+ 
+
+Default Target 
+
+ - `all`: Default target builds `OUTPUT` when you run `make`.  
+
+ 
+
+Compilation Rule 
+
+ - Compiles `SOURCES` into `OUTPUT` using `g++` with specified flags.  
+
+ 
+
+Cleaning Rule 
+
+ - `make clean` removes the `OUTPUT` file to clean the project.  
+
+ 
+
+PHONY 
+
+ - `.PHONY` marks `all` and `clean` as tasks, not actual files. 
+
+ 
+
+Usage Instructions: To compile, navigate to the project directory containing the Makefile in terminal and run the following commands: 
+
+ - To compile: `make` 
+
+ - To clean: `make clean` 
+
+ 
+
+This allows for easy compilation and cleanup of project files. 
+
+ 
+
+Interfacing With the Terminal: 
+
+When using the application, it will prompt the user for a filename which needs to be entered.  
+
+If you want to get a specific zip code the zip code(s) you are searching for will need to be entered into the command line alongside the run command at the same time. This line will vary depending on what file type you wish to run.  
+
+Blocked data example 
+
+./ZipCode.exe -Z55448 –Z58333 
+
+Any other valid file type: 
+
+./ZipCode.exe -Z 55448 –Z 58333 
