@@ -109,6 +109,8 @@
 
 
     //version of writeHeader that prints to a file of choice rather than the file held by the object
+    /// @brief Write the header data to a file. Used for writing to a file different than the one in the object 
+    /// @pre filename the name of the file to be written to.
     void HeaderBuffer::writeHeaderToFile(const std::string& filename) {
         std::ofstream file(filename);
 
