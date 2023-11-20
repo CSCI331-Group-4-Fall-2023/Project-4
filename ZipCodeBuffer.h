@@ -5,7 +5,7 @@
  * @brief Class to parse ZIP code records in a file.
  * @author Kent Biernath
  * @author Emma Hoffmann, Emily Yang
- * @date 2023-11-14
+ * @date 2023-11-19
  * @version 3.0
  */
 // ----------------------------------------------------------------------------
@@ -82,18 +82,6 @@ public:
      * \n  -- 'B' = Blocked length-indicated records.
      */
     ZipCodeBuffer(std::ifstream &file, char fileType, HeaderBuffer headerBuffer);
-
-
-
-
-
-    //ZipCodeBuffer(std::ifstream &file, char fileType) : ZipCodeBuffer(file, fileType, HeaderBuffer("us_postal_codes.txt")) {}
-    // TODO change when HeaderBuffer has a default constructor
-
-
-
-
-
 
 
     //** @brief Destructor to close the file when done. */

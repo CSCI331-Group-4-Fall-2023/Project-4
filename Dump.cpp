@@ -1,4 +1,6 @@
-// PrintBlock.cpp
+/// @file Dump.cpp
+/// @brief Implementation of the Dump class methods for printing and dumping records.
+/// See Dump.h for the class declaration and documentation.
 
 #include "Dump.h"
 #include <iostream>
@@ -19,15 +21,20 @@ Dump::Dump(ZipCodeBuffer &recordBuffer) : recordBuffer(recordBuffer), blockBuffe
     headerBuffer.readHeader();
 }
 
+
+
+/// @brief Dump records in logical order.
 void Dump::dumpLogicalOrder() {
+    // Display the list head Relative Block Numbers
     std::cout << "List Head RBN: " << headerBuffer.getRBNS() << std::endl;
     std::cout << "Avail Head RBN: " << headerBuffer.getRBNA() << std::endl;
 
     while (true)
     {
         std::vector<std::string> records = blockBuffer.readNextBlock();
-        if (records.size() == 0)
+        if (records.size() == 0) // TODO could change to when it reads -1 as next RBN to skip a step
         {
+            // When it receives an empty vector, end the loop
             break;
         }
         
@@ -35,7 +42,11 @@ void Dump::dumpLogicalOrder() {
     }
 }
 
+
+
+/// @brief Dump records in physical order.
 void Dump::dumpPhysicalOrder() {
+    // Display the list head Relative Block Numbers
     std::cout << "List Head RBN: " << headerBuffer.getRBNS() << std::endl;
     std::cout << "Avail Head RBN: " << headerBuffer.getRBNA() << std::endl;
 
@@ -43,25 +54,29 @@ void Dump::dumpPhysicalOrder() {
     int endpoint = headerBuffer.getBlockCount();
     while (i < endpoint)
     {
+        // Read the number of blocks listed in the file metadata
         std::vector<std::string> records = blockBuffer.readBlock(i++);
-        
         printBlock(records);
     }
 }
 
+
+
+/// @brief Print a block of records.
 void Dump::printBlock(std::vector<std::string> records) {
     
-    std::cout << std::left << std::setw(6) << blockBuffer.getPrevRBN();
+    std::cout << std::left << std::setw(6) << blockBuffer.getPrevRBN(); // Display preceding RBN
     for (const std::string& recordString : records) {
         ZipCodeRecord record = recordBuffer.parseRecord(recordString);
-        std::cout << std::setw(6) << record.zipCode;
+        std::cout << std::setw(6) << record.zipCode;                    // Display the key (zipCode) for each record in the block
     }
-    std::cout << std::left << std::setw(6) << blockBuffer.getNextRBN();
+    std::cout << std::left << std::setw(6) << blockBuffer.getNextRBN(); // Display succeeding RBN
     std::cout << std::endl;
 }
 
 
 
+/// @brief Dump the block index from a file.
 void Dump::dumpBlockIndex(const std::string& filename) {
     std::ifstream mainFile(filename);
     if (!mainFile.is_open()) {
