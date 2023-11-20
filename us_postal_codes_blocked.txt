@@ -1,12 +1,12 @@
 Header:
  - File structure type: 3.0
  - File structure version: 2.0
- - Header Size (bytes): 646
+ - Header Size (bytes): 629
  - Record Size (bytes): 0
  - Size Format Type: ASCII
  - Block Size: 512
  - Minimum Block Capacity: 0
- - Primary Key Index File: blocked_postal_codes.txt_index.txt
+ - Primary Key Index File: blocked_Index.txt
  - Primary Key Index File Schema: sample
  - Record Count: 40933
  - Block Count: 4641

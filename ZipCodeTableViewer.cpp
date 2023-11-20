@@ -210,8 +210,8 @@ int main(int argc, char* argv[]) {
     {
         // If command line parameters were given, do a search.
 
-        // Generate an index
         if (fileType != 'B') {
+            // Generate an index
             std::ifstream searchFile(fileName);
             ZipCodeIndexer index(searchFile, fileType, fileName + "_index.txt", headerBuffer);
             index.createIndex();
@@ -248,7 +248,6 @@ int main(int argc, char* argv[]) {
         else // else fileType == B
         {
             // Run blocked file search
-            BlockSearch searcher;
 
             for (int i = 1; i < argc; ++i) {
                 string arg = argv[i];
@@ -259,6 +258,7 @@ int main(int argc, char* argv[]) {
                     int zipcode;
 
                     try {
+                        BlockSearch searcher;
                         zipcode = stoi(zipcodeStr);
                         string result = searcher.searchForRecord(zipcode);
 
@@ -278,8 +278,6 @@ int main(int argc, char* argv[]) {
                 }
             }
         }
-        
-
     }
 
     file.close();
