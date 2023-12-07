@@ -12,7 +12,7 @@
 
 
 
-BlockBuffer::BlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer = HeaderBuffer("blocked_postal_codes.txt")) : file(file) { // TODO remove HeaderBuffer filename once it allows generic constructor
+BlockBuffer::BlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer) : file(file) {
     headerBuffer.readHeader();
     headerSize = headerBuffer.getHeaderSizeBytes();
     blockSize = headerBuffer.getBlockSize();
