@@ -39,7 +39,6 @@
 #include <fstream> // for file operations
 #include <string>
 #include <vector>
-#include "BlockBuffer.h"
 #include "HeaderBuffer.h"
 #include <sstream>
 
