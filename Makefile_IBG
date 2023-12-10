@@ -1,0 +1,22 @@
+# Compiler and compiler flags
+CXX = g++
+CXXFLAGS = -std=c++11
+
+# Source files
+SOURCES = IndexBlockGenerator.cpp
+
+# Output executable name
+OUTPUT = IndexBlockGenerator.exe
+
+# Default target
+all: $(OUTPUT)
+
+# Compile the program
+$(OUTPUT): $(SOURCES)
+	$(CXX) $(CXXFLAGS) -o $@ $(SOURCES)
+
+# Clean the compiled files
+clean:
+	rm -f $(OUTPUT)
+
+.PHONY: all clean

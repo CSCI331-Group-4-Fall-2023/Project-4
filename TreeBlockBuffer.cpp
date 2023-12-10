@@ -1,26 +1,28 @@
-/// @file BlockBuffer.cpp
-/// @class BlockBuffer
-/// See BlockBuffer.h for full documentation.
+/// @file TreeBlockBuffer.cpp
+/// @class TreeBlockBuffer
+/// See TreeBlockBuffer.h for full documentation.
 
 #include <iostream>
 #include <fstream> // for file operations
 #include <string>
 #include <vector>
-#include "BlockBuffer.h"
+#include "TreeBlockBuffer.h"
 #include "HeaderBuffer.h"
 #include <sstream>
 
 
 
-BlockBuffer::BlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer) : file(file) {
+TreeBlockBuffer::TreeBlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer) : file(file) {
     headerBuffer.readHeader();
     headerSize = headerBuffer.getHeaderSizeBytes();
     blockSize = headerBuffer.getBlockSize();
     nextRBN = headerBuffer.getRBNS();
+
+    // TODO call readBlock on new metadata field value for where the index tree begins
 }
 
 
-vector<string> BlockBuffer::unpackBlockRecords() {
+vector<string> TreeBlockBuffer::unpackBlockRecords() {
     // This will convert a block to a vector of records
     size_t idx = 0;
     vector<string> records;
@@ -43,7 +45,7 @@ vector<string> BlockBuffer::unpackBlockRecords() {
 
 
 /// @brief Reads the block metadata for the current block.
-void BlockBuffer::readBlockMetadata() {
+void TreeBlockBuffer::readBlockMetadata() {
     int metadataRecordLength = -1;
     int newRelativeBlockNumber = -1;
     int newNumRecordsInBlock = -1;
@@ -72,14 +74,14 @@ void BlockBuffer::readBlockMetadata() {
 
 
 /// @brief Calculates the address of a Relative Block Number (RBN) within the file.
-int BlockBuffer::calculateBlockAddress(int relativeBlockNumber) {
+int TreeBlockBuffer::calculateBlockAddress(int relativeBlockNumber) {
     return headerSize + relativeBlockNumber*blockSize;
 }
 
 
 
 /// @brief Moves the file pointer to the address of the block at the given Relative Block Number (RBN).
-void BlockBuffer::moveToBlock(int relativeBlockNumber) {
+void TreeBlockBuffer::moveToBlock(int relativeBlockNumber) {
     int address = calculateBlockAddress(relativeBlockNumber);
     file.seekg(address);
 }
@@ -87,7 +89,7 @@ void BlockBuffer::moveToBlock(int relativeBlockNumber) {
 
 
 /// @brief Reads the block at the given Relative Block Number (RBN) and returns it as a vector of records in string form.
-vector<string> BlockBuffer::readBlock(int relativeBlockNumber) {
+vector<string> TreeBlockBuffer::readBlock(int relativeBlockNumber) {
     vector<string> recordStrings;
     std::string line;
 
@@ -105,12 +107,12 @@ vector<string> BlockBuffer::readBlock(int relativeBlockNumber) {
 
 
 /// @brief Reads the current block and returns it as a vector of records in string form.
-vector<string> BlockBuffer::readCurrentBlock() {
+vector<string> TreeBlockBuffer::readCurrentBlock() {
     readBlockMetadata();                // Read the metadata for the block
     return unpackBlockRecords();        // Read the length-indicated records into strings and return them
 }
 
 
-vector<string> BlockBuffer::readNextBlock() {
+vector<string> TreeBlockBuffer::readNextBlock() {
     return readBlock(nextRBN);
 }

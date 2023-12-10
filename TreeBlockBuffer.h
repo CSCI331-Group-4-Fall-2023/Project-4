@@ -39,12 +39,13 @@
 #include <fstream> // for file operations
 #include <string>
 #include <vector>
+#include "BlockBuffer.h"
 #include "HeaderBuffer.h"
 #include <sstream>
 
 using namespace std;
 
-class BlockBuffer {
+class TreeBlockBuffer {
 private: 
     std::ifstream &file;        // The ifstream to read blocks from.
     int numRecordsInBlock = 0;  // Number of records in the current block (read from metadata)
@@ -62,7 +63,7 @@ public:
      * @pre: The block is a string.
      * @post: A new Block Buffer object is created.
      */
-    BlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer);
+    TreeBlockBuffer(std::ifstream &file, HeaderBuffer headerBuffer);
     //BlockBuffer(std::ifstream &file) : BlockBuffer(file, HeaderBuffer("blocked_postal_codes.txt")) {} // TODO replace hardcoded file name once HeaderBuffer allows generic constructor
 
 
